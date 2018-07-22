@@ -1,0 +1,14 @@
+<th:block th:each="item : ${collection}">
+    <div class="form-group">
+        <div class="form-check" th:classappend="${inputClass!=null? inputClass : ''}">
+            <input class="form-check-input" th:id="${item.toString()}" type="radio" th:name="${fieldName}"
+                   th:value="${item}"
+                   th:field="*{__${fieldName}__}"
+                   th:with="value=*{__${fieldName}__}"
+                   th:checked="${ value!=null && value.toString() == item.toString() }">
+            <label th:classappend="${labelClass!=null? labelClass : ''}"
+                   th:text="${item.toString()}"
+                   th:for="${item.toString()}"></label>
+        </div>
+    </div>
+</th:block>

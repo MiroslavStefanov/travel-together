@@ -1,0 +1,9 @@
+<textarea
+        th:id="${fieldName}"
+        th:name="${fieldName}"
+        th:text="*{__${fieldName}__}"
+        th:field="*{__${fieldName}__}"
+        th:classappend="|${hasError ? 'is-invalid' : ''} ${inputClass != null ? inputClass : ''}|"
+        th:readonly="${isDisabled != null && isDisabled}"
+>
+</textarea>

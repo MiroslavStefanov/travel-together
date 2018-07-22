@@ -1,0 +1,17 @@
+.bg-resev {
+    background-color: #8E0D46;
+}
+
+textarea{
+    resize: none;
+}
+
+#map {
+    height: 100%;
+}
+
+html, body, main {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}

@@ -1,0 +1,151 @@
+package org.softuni.traveltogether.domain.entities;
+
+import org.hibernate.annotations.GenericGenerator;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+@Entity
+@Table(name = "users")
+public class User implements UserDetails {
+
+    private String id;
+    private String username;
+    private String password;
+    private String email;
+    private Boolean isAccountNonExpired;
+    private Boolean isAccountNonLocked;
+    private Boolean isCredentialsNonExpired;
+    private Boolean isEnabled;
+    private Set<Role> authorities;
+    private Set<Travel> travels;
+    private List<Comment> comments;
+
+    public User() {
+        this.authorities = new HashSet<>();
+    }
+
+    @Id
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(
+            name = "UUID",
+            strategy = "org.hibernate.id.UUIDGenerator"
+    )
+    @Column(name = "id", updatable = false, nullable = false)
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    @Column(unique = true)
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    @NotNull
+    @Size(min = 3, max = 20)
+    @Column(unique = true, nullable = false, length = 20)
+    @Override
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    @NotNull
+    @NotEmpty
+    @Column(nullable = false)
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return isAccountNonExpired;
+    }
+
+    public void setAccountNonExpired(Boolean isAccountNonExpired) {
+        this.isAccountNonExpired = isAccountNonExpired;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return isAccountNonLocked;
+    }
+
+    public void setAccountNonLocked(Boolean isAccountNonLocked) {
+        this.isAccountNonLocked = isAccountNonLocked;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return isCredentialsNonExpired;
+    }
+
+    public void setCredentialsNonExpired(Boolean isCredentialsNonExpired) {
+        this.isCredentialsNonExpired = isCredentialsNonExpired;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
+    public void setEnabled(Boolean isEnabled) {
+        this.isEnabled = isEnabled;
+    }
+
+    @ManyToMany
+    @JoinTable(
+            name = "users_authorities",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns =  @JoinColumn(name = "authority_id")
+    )
+    @Override
+    public Set<Role> getAuthorities() {
+        return Collections.unmodifiableSet(this.authorities);
+    }
+
+    public void setAuthorities(Set<Role> authorities) {
+        this.authorities = authorities;
+    }
+
+    @OneToMany(mappedBy = "publisher", cascade = CascadeType.ALL, orphanRemoval = true)
+    public Set<Travel> getTravels() {
+        return travels;
+    }
+
+    public void setTravels(Set<Travel> travels) {
+        this.travels = travels;
+    }
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
+}

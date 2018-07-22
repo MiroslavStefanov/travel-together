@@ -1,0 +1,44 @@
+<div class="form-group"
+     th:with="hasError = ${#fields.hasErrors(fieldName)}"
+     th:switch="${type}">
+    <div class='form-check'
+         th:remove="${type=='checkbox' ? tag : none}">
+        <th:block
+                th:if="${type!='checkbox' && type!='radio-group'}"
+                th:include="fragments/forms/label"
+                th:with="fieldName=${fieldName}, label=${label}, labelClass=${labelClass}">
+        </th:block>
+        <th:block
+                th:case="'select'"
+                th:include="fragments/forms/select"
+                th:with="fieldName=${fieldName}, hasError=${hasError}, inputClass=${inputClass}, collection=${collection}, isMultiple=${isMultiple}, isObject=${isObject==null?false:isObject}">
+        </th:block>
+        <th:block
+                th:case="'radio-group'"
+                th:include="fragments/forms/radio-group"
+                th:with="fieldName=${fieldName}, hasError=${hasError}, inputClass=${inputClass}, collection=${collection}, labelClass=${labelClass}">
+        </th:block>
+        <th:block
+                th:case="'checkbox'"
+                th:include="fragments/forms/input"
+                th:with="fieldName=${fieldName}, hasError=${hasError}, inputClass=${inputClass}, collection=${collection}">
+        </th:block>
+        <th:block
+                th:case="'textarea'"
+                th:include="fragments/forms/textarea"
+                th:with="fieldName=${fieldName}, hasError=${hasError}, inputClass=${#strings.concat(inputClass, ' form-control')}">
+        </th:block>
+        <th:block
+                th:case="*"
+                th:include="fragments/forms/input"
+                th:with="fieldName=${fieldName}, hasError=${hasError}, inputClass=${#strings.concat(inputClass, ' form-control')}, type=${type}">
+        </th:block>
+        <th:block
+                th:if="${type=='checkbox'}"
+                th:include="fragments/forms/label"
+                th:with="fieldName=${fieldName}, label=${label}, labelClass=${labelClass}">
+        </th:block>
+        <small th:if="${hasError && errorText!=null}"
+               th:text="${errorText}" class="text-danger"></small>
+    </div>
+</div>

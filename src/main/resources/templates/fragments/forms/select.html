@@ -1,0 +1,12 @@
+<select class="form-control"
+        th:multiple="${isMultiple}"
+        th:id="${fieldName}"
+        th:field="*{__${fieldName}__}"
+        th:classappend="|${hasError ? 'is-invalid' : ''} ${inputClass != null ? inputClass : ''}|">
+    <th:block th:each="item : ${collection}">
+        <option th:value="${isObject? item.toString() : item}"
+                th:with="value = *{__${fieldName}__}"
+                th:selected="${value!=null && ((!isObject && value==item) || (isObject && #lists.contains(value, item)))}"
+                th:text="${item.toString()}"></option>
+    </th:block>
+</select>
