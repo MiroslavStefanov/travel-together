@@ -1,0 +1,11 @@
+<div id="content" class="jumbotron bg-white" xmlns:th="http://www.w3.org/1999/xhtml">
+
+    <h1 class="text-center" th:text="|Welcome back, ${#authentication.principal.username}|"></h1>
+
+    <h2 class="text-center text-secondary p-3">Find your next travel</h2>
+
+    <th:block th:include="fragments/travel-search"></th:block>
+
+    <th:block th:include="fragments/most-recent-travels"></th:block>
+
+</div>

@@ -34,18 +34,15 @@ public class PasswordValidator implements ConstraintValidator<Password, String> 
         if(s == null)
             return false;
 
-        String msg = "{org.softuni.resident-evil.core.validation.validators.PasswordValidator.";
+        String msg = "{org.softuni.travel-together.validation.Password.";
         boolean isValid = true;
 
-        if(s.length() < minLength) {
+        if(s.length() < minLength || s.length() > maxLength) {
 
-            msg += "minLength}";
+            msg += "length}";
+            msg += " " + minLength + " and " + maxLength + " symbols";
             isValid = false;
-        } else if(s.length() > maxLength) {
-
-            msg += "maxLength}";
-            isValid = false;
-        } else {
+        }  else {
 
             if(digit)
                 isValid = isValid && digitPattern.matcher(s).find();

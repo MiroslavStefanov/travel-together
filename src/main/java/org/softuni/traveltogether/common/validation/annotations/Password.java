@@ -15,7 +15,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Constraint(validatedBy = PasswordValidator.class)
 public @interface Password {
 
-    String message() default "{org.softuni.resident-evil.core.validation.annotations.Password.default}";
+    String message() default "{org.softuni.travel-together.validation.Password.default}";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
     int minLength();

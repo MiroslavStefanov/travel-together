@@ -20,7 +20,7 @@ public class RoleServiceImpl implements RoleService{
     public UserRole getRole(String roleName) {
         Role role = this.roleRepository.findFirstByAuthority(roleName);
         if(role == null)
-            return UserRole.IVALID_ROLE;
+            return UserRole.INVALID_ROLE;
         return UserRole.valueOf(role.getAuthority());
     }
 }

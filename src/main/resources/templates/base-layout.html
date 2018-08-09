@@ -3,7 +3,7 @@
 <!--/*@thymesVar id="view" type="java.lang.String"*/-->
 <!--/*@thymesVar id="title" type="java.lang.String"*/-->
 <head th:insert="fragments/head" th:with="pageTitle = ${title}"></head>
-
+<span th:include="fragments/scripts-bundle"></span>
 <body>
 
 <header th:replace="fragments/header"></header>
@@ -11,7 +11,5 @@
 <main th:include="${view}"></main>
 
 <footer th:replace="fragments/footer"></footer>
-
-<span th:include="fragments/scripts-bundle"></span>
 </body>
 </html>

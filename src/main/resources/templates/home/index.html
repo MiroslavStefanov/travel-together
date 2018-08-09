@@ -1,0 +1,37 @@
+<div id="content" xmlns:th="http://www.w3.org/1999/xhtml">
+    <section>
+        <div class="jumbotron-fluid bg-white mt-5">
+            <div class="container">
+                <div>
+                    <h1>Welcome to Travel Together</h1>
+                    <h3>Take part in our program to share travelling experience with great new people.</h3>
+                </div>
+                <div class="d-inline-block justify-content-around p-4">
+                    <img class="img-fluid" title="TravelTogether" src="/assets/theme.png" alt="Theme"/>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section>
+        <div class="jumbotron-fluid bg-primary">
+            <div class="container d-flex justify-content-around">
+                <div class="d-inline-block p-3">
+                    <img src="/assets/route.png" alt="route" width="80" height="80"/>
+                    <p class="text-light">Reach your desired destination</p>
+                </div>
+                <div class="d-inline-block p-3">
+                    <img src="/assets/save.png" alt="save" width="80" height="80"/>
+                    <p class="text-light">Save money for transport</p>
+                </div>
+                <div class="d-inline-block p-3">
+                    <img src="/assets/share.png" alt="share" width="120" height="80"/>
+                    <p class="text-light">Share your travel with new people</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <th:block th:include="fragments/most-recent-travels"></th:block>
+</div>
+
+

@@ -16,7 +16,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Constraint(validatedBy = EmailValidator.class)
 public @interface Email {
 
-    String message() default "{org.softuni.resident-evil.core.validation.annotations.Email.default}";
+    String message() default "{org.softuni.travel-together.validation.Email.default}";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

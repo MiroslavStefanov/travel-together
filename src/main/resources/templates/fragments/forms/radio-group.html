@@ -1,4 +1,4 @@
-<th:block th:each="item : ${collection}">
+<th:block th:each="item : ${collection}" xmlns:th="http://www.w3.org/1999/xhtml">
     <div class="form-group">
         <div class="form-check" th:classappend="${inputClass!=null? inputClass : ''}">
             <input class="form-check-input" th:id="${item.toString()}" type="radio" th:name="${fieldName}"

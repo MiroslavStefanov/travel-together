@@ -5,6 +5,8 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -13,6 +15,7 @@ import java.util.Set;
 public class Travel {
     private String id;
     private String description;
+    private LocalDateTime publishedAt;
     private LocalDateTime departureTime;
     private Destination fromDestination;
     private Destination toDestination;
@@ -21,6 +24,8 @@ public class Travel {
     private List<Comment> comments;
 
     public Travel() {
+        this.attendants = new HashSet<>();
+        this.comments = new ArrayList<>();
     }
 
     @Id
@@ -47,6 +52,16 @@ public class Travel {
         this.description = description;
     }
 
+    @NotNull
+    @Column(nullable = false)
+    public LocalDateTime getPublishedAt() {
+        return publishedAt;
+    }
+
+    public void setPublishedAt(LocalDateTime publishedAt) {
+        this.publishedAt = publishedAt;
+    }
+
     public LocalDateTime getDepartureTime() {
         return departureTime;
     }
@@ -55,6 +70,7 @@ public class Travel {
         this.departureTime = departureTime;
     }
 
+    @ManyToOne
     public Destination getFromDestination() {
         return fromDestination;
     }
