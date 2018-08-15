@@ -1,0 +1,45 @@
+<h2 class="text-center text-blue1 p-3">Find your next travel</h2>
+
+<div class="container mt-3" th:fragment="travel-search" xmlns:th="http://www.thymeleaf.org">
+    <form id="travel-search-from" autocomplete="off" class="form-horizontal" method="post" th:action="@{/travels}">
+            <table class="d-flex justify-content-center">
+                <tbody class="w-100">
+                <tr class="row d-flex justify-content-center">
+                    <td class="col-md-3 col-sm-8 border pt-2">
+                        <h6 class="h-25">From</h6>
+                        <input id="from" name="fromDestination" class="no-border w-100" type="text"/>
+                    </td>
+                    <td class="col-md-3 col-sm-8 border pt-2">
+                        <h6>To</h6>
+                        <input id="to" name="toDestination" class="no-border w-100" type="text"/>
+                    </td>
+                    <td class="col-md-3 col-sm-8 border pt-2">
+                        <h6>Departure after</h6>
+                        <input id="when-from" name="fromDate" class="no-border" type="datetime-local"/>
+                    </td>
+                    <td class="col-md-3 col-sm-8 border pt-2">
+                        <h6>Departure before</h6>
+                        <input id="when-to" name="toDate" class="no-border" type="datetime-local"/>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+        <div class="d-flex justify-content-center my-4">
+            <button type="submit" class="btn btn-blue btn-lg ">Search</button>
+        </div>
+    </form>
+</div>
+<script xmlns:th="http://www.thymeleaf.org" th:src="@{/scripts/util/autocomplete.js}"></script>
+<script xmlns:th="http://www.thymeleaf.org" th:inline="javascript">
+    autocomplete(document.getElementById("from"), [[${allDestinations}]]);
+    autocomplete(document.getElementById("to"), [[${allDestinations}]]);
+    $('#travel-search-from').submit((event) => {
+        event.preventDefault();
+        travelPageHandler.arguments.sDest = $('#from').val();
+        travelPageHandler.arguments.eDest = $('#to').val();
+        travelPageHandler.arguments.fDate = $('#when-from').val();
+        travelPageHandler.arguments.tDate = $('#when-to').val();
+        pageService.handlePage()
+    });
+</script>

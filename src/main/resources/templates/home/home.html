@@ -1,11 +1,39 @@
 <div id="content" class="jumbotron bg-white" xmlns:th="http://www.w3.org/1999/xhtml">
 
-    <h1 class="text-center" th:text="|Welcome back, ${#authentication.principal.username}|"></h1>
+    <h1 class="text-center text-blue2" th:text="|Welcome back, ${#authentication.principal.username}|"></h1>
 
-    <h2 class="text-center text-secondary p-3">Find your next travel</h2>
+    <div class="container w-100">
+        <div class="row d-flex justify-content-around">
+            <div class="col-lg-4 col-md-5 col-sm-7 bg-blue1 h-450px rounded my-5 mx-1">
+                <div class="w-100 h-15 d-flex flex-column justify-content-center">
+                    <h3 class="text-center text-light my-auto">My travels</h3>
+                </div>
+                <div class="h-80 scrollable-vertical bg-white rounded m-1">
+                    <div class="mini-row d-flex align-items-center" th:each="travel : ${model.myTravels}">
+                        <a th:href="@{/travels/{id}(id=${travel.id})}">
+                            <h5 class="pl-3 text-blue2" th:text="${travel.name}"></h5>
+                            <div class="pl-3">
+                                <small class="text-muted" th:text="|Departure at ${#temporals.format(travel.departureTime)}|"></small>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-5 col-sm-7 bg-blue1 h-450px rounded my-5 mx-1">
+                <div class="w-100 h-15 d-flex flex-column justify-content-center">
+                    <h3 class="text-center text-light">Attended travels</h3>
+                </div>
+                <div class="h-80 scrollable-vertical bg-white rounded m-1">
+                    <div class="mini-row d-flex align-items-center" th:each="travel : ${model.attendedTravels}">
+                        <a th:href="@{/travels/{id}(id=${travel.id})}">
+                            <h5 class="pl-3 text-blue2" th:text="${travel.name}"></h5>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <th:block th:include="fragments/travel-search"></th:block>
-
-    <th:block th:include="fragments/most-recent-travels"></th:block>
+    <th:block th:include="fragments/travel/most-recent-travels"></th:block>
 
 </div>

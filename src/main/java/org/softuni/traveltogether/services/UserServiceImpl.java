@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService {
             user.setAuthorities(new HashSet<>(){{
                 add(roleRepository.findFirstByAuthority(UserRole.ROLE_USER.toString()));
             }});
-            user = this.userRepository.save(user);
+            user = this.userRepository.saveAndFlush(user);
         } catch (Exception e) {
             //better handling of errors
             e.printStackTrace();

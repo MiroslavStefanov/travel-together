@@ -1,18 +1,22 @@
 package org.softuni.traveltogether.domain.models.service;
 
+import org.softuni.traveltogether.domain.models.view.UserLinkViewModel;
+
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
 
 public class TravelServiceModel {
-    private static final short DESCRIPTION_SHORT_LIMIT = 120;
-    private static final short SPACE_SEARCH_RANGE = 15;
-
     private String id;
     private String description;
     private LocalDateTime publishedAt;
     private LocalDateTime departureTime;
     private DestinationServiceModel fromDestination;
     private DestinationServiceModel toDestination;
-    private String publisher;
+    private UserLinkViewModel publisher;
+    private Set<UserLinkViewModel> attendants;
+    private List<CommentServiceModel> comments;
+    private Set<TravelRequestServiceModel> requests;
 
     public TravelServiceModel() {
     }
@@ -31,17 +35,6 @@ public class TravelServiceModel {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getShortDescription() {
-        if(this.description != null && this.description.length() > DESCRIPTION_SHORT_LIMIT) {
-            int spaceIndx = this.description.indexOf(' ', DESCRIPTION_SHORT_LIMIT - SPACE_SEARCH_RANGE);
-            if(spaceIndx - SPACE_SEARCH_RANGE > DESCRIPTION_SHORT_LIMIT)
-                spaceIndx = DESCRIPTION_SHORT_LIMIT;
-            return this.description.substring(0, spaceIndx) + "...";
-        }
-
-        return this.description;
     }
 
     public LocalDateTime getPublishedAt() {
@@ -76,11 +69,35 @@ public class TravelServiceModel {
         this.toDestination = toDestination;
     }
 
-    public String getPublisher() {
+    public UserLinkViewModel getPublisher() {
         return publisher;
     }
 
-    public void setPublisher(String publisher) {
+    public void setPublisher(UserLinkViewModel publisher) {
         this.publisher = publisher;
+    }
+
+    public Set<UserLinkViewModel> getAttendants() {
+        return attendants;
+    }
+
+    public void setAttendants(Set<UserLinkViewModel> attendants) {
+        this.attendants = attendants;
+    }
+
+    public List<CommentServiceModel> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<CommentServiceModel> comments) {
+        this.comments = comments;
+    }
+
+    public Set<TravelRequestServiceModel> getRequests() {
+        return requests;
+    }
+
+    public void setRequests(Set<TravelRequestServiceModel> requests) {
+        this.requests = requests;
     }
 }

@@ -62,7 +62,7 @@ public class UserRegisterBindingModel implements PasswordConfirmable {
     }
 
     @NotNull
-    @NotEmpty(message = "{org.softuni.travel-together.validation.Field.empty}")
+    @Size(min=0, message = "{org.softuni.travel-together.validation.Field.empty}")
     public String getFirstName() {
         return firstName;
     }
@@ -72,7 +72,7 @@ public class UserRegisterBindingModel implements PasswordConfirmable {
     }
 
     @NotNull
-    @NotEmpty(message = "{org.softuni.travel-together.validation.Field.empty}")
+    @Size(min=0, message = "{org.softuni.travel-together.validation.Field.empty}")
     public String getLastName() {
         return lastName;
     }

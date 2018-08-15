@@ -3,6 +3,7 @@ package org.softuni.traveltogether.services;
 import org.modelmapper.ModelMapper;
 import org.softuni.traveltogether.domain.entities.Destination;
 import org.softuni.traveltogether.repositories.DestinationRepository;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -21,6 +22,7 @@ public class DestinationServiceImpl implements DestinationService {
     }
 
     @Override
+    @Cacheable("destinationNames")
     public List<String> getAllDestinationsNames() {
         return this.destinationRepository.findAll()
                 .stream()

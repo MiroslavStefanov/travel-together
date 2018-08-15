@@ -9,6 +9,9 @@ public interface TravelService {
 
     String saveTravel(TravelCreateBindingModel travelCreateBindingModel);
 
-    List<TravelServiceModel> get5MostRecent();
+    String editTravel(String travelId, TravelCreateBindingModel travelCreateBindingModel);
 
+    void deleteTravel(String travelId);
+
+    TravelServiceModel getTravel(String id);
 }

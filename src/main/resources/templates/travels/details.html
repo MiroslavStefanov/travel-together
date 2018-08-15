@@ -1,0 +1,121 @@
+<div id="content" xmlns:th="http://www.thymeleaf.org"
+     xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+     th:with="userId = ${@userServiceImpl.findUserByUsername(#authentication.name).id}">
+    <div class="jumbotron-fluid p-3">
+        <h1 class="text-center">Travel Details</h1>
+    </div>
+    <!--/*@thymesVar id="model" type="org.softuni.traveltogether.domain.models.view.TravelDetailsViewModel"*/-->
+    <div id="body" th:object="${model}">
+        <div class="container mt-3 mb-5" id="information">
+            <h2 class="text-center text-blue2">Information</h2>
+            <div class="row">
+                <div class="col-md-6 col-sm-12">
+                    <h3 class="text-blue2">From: <span class="text-blue1" th:text="*{fromDestination.name}"></span></h3>
+                    <h3 class="text-blue2">To: <span class="text-blue1" th:text="*{toDestination.name}"></span></h3>
+                    <h3 class="text-blue2">Departure at: <span class="text-blue1" th:text="*{#temporals.format(departureTime, 'dd-MMM-yyyy hh:mm a')}"></span></h3>
+                    <h3 class="text-blue2">Creator: <a class="text-blue1" th:href="@{/users/{id}(id=*{publisher.id})}" th:text="*{publisher.fullName}"></a></h3>
+                    <small class="text-muted" th:text="|Published at *{#temporals.format(publishedAt)}|"></small>
+                </div>
+                <div class="col-md-6 col-sm-12 d-flex" th:if="${userId == model.publisher.id || #authorization.expr('hasAnyRole(''ADMIN'', ''ROOT'')')}">
+                    <div class="container w-50 mt-auto pt-1" id="actions">
+                        <h2 class="text-center text-blue2">Actions</h2>
+                        <div class="d-flex justify-content-center">
+                            <a th:href="@{/travels/{id}/edit(id=*{id})}" class="d-inline-block btn btn-blue m-3">Edit</a>
+                            <a th:href="@{/travels/{id}/delete(id=*{id})}" class="d-inline-block btn btn-red m-3">Delete</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container scrollable-horizontal my-5" id="attendants">
+            <h3>Attendants</h3>
+            <div th:each="attendant : *{attendants}" class="d-inline-block mx-1">
+                <a th:href="@{/profile/{id}(id=${attendant.id})}" class="d-block">
+                    <div class="d-flex justify-content-center">
+                        <img th:src="${attendant.profilePictureLink}" width="64", height="64" class="rounded-circle"/>
+                    </div>
+                    <div>
+                        <p class="text-muted text-center m-0" th:text="${attendant.fullName}"></p>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <div class="container my-5" id="description" th:if="*{description != null && description.length() > 0}">
+            <h2 class="text-blue2">Description</h2>
+            <p class="text-justify text-blue2" th:text="*{description}"></p>
+        </div>
+
+        <th:block th:with="hasRequested = ${#sets.contains(model.allRequestingUserIds, userId)}, hasAttended = ${#sets.contains(model.allParticipatedUserIds, userId)}">
+            <div th:if="${!hasAttended}">
+                <div class="container d-flex justify-content-end" th:if="${!hasRequested}">
+                    <button type="submit" id="send-request-btn" class="btn btn-blue">Participate</button>
+                </div>
+                <div class="container d-flex justify-content-end" th:if="${hasRequested}">
+                    <button type="submit" id="cancel-request-btn" class="btn btn-blue">Cancel Request</button>
+                </div>
+            </div>
+        </th:block>
+
+        <div class="container bg-grey2 mt-5 mb-3" id="comments">
+            <h2>Comments:</h2>
+            <div class="container w-50 scrollable-vertical">
+                <div class="bg-info mt-4" th:each="comment : *{comments}">
+                    <p th:text="${comment.content}"></p>
+                    <small th:text="|by ${comment.user.fullName} at ${#temporals.format(comment.dateTime)}|"></small>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script xmlns:th="http://www.thymeleaf.org" th:inline="javascript">
+    $(document).ready(() => {
+        $('#send-request-btn').click(() => {
+            let request = {
+                travel: '/travel_api/' + [[${model.id}]],
+                user: '/users/' + [[${@userServiceImpl.findUserByUsername(#authentication.name).id}]]
+            };
+            $.ajax({
+                type: 'POST',
+                url: '/travelRequests',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(request),
+                beforeSend: (request) => {
+                    let _tc = $("meta[name='_csrf']").attr("content");
+                    let _hc = $("meta[name='_csrf_header']").attr("content");
+                    request.setRequestHeader(_hc, _tc);
+                },
+                success: () => {
+                    let requestBtn = $('#send-request-btn');
+                    requestBtn.text('Request sent');
+                    requestBtn.prop('disabled', true);
+                }
+            })
+        });
+
+        $('#cancel-request-btn').click(() => {
+            /*let loggedInUserId = [[${@userServiceImpl.findUserByUsername(#authentication.name).id}]];
+            console.log(loggedInUserId);*/
+            let requestId = [[${model.getRequestByUserId(@userServiceImpl.findUserByUsername(#authentication.name).id)}]];
+            console.log(requestId);
+            $.ajax({
+                type: 'DELETE',
+                url: '/travelRequests/' + requestId,
+                dataType: 'json',
+                contentType: 'application/json',
+                beforeSend: (request) => {
+                    let _tc = $("meta[name='_csrf']").attr("content");
+                    let _hc = $("meta[name='_csrf_header']").attr("content");
+                    request.setRequestHeader(_hc, _tc);
+                },
+                success: () => {
+                    let requestBtn = $('#cancel-request-btn');
+                    requestBtn.hide();
+                }
+            })
+        });
+    })
+</script>

@@ -6,6 +6,7 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -17,6 +18,7 @@ public class Destination {
     private Double latitude;
     private Double longitude;
     private Set<Travel> travels;
+    private Set<String> imageUrls;
 
     public Destination() {
         this.travels = new HashSet<>();
@@ -82,5 +84,15 @@ public class Destination {
 
     public void setTravels(Set<Travel> travels) {
         this.travels = travels;
+    }
+
+    @Lob
+    @ElementCollection
+    public Set<String> getImageUrls() {
+        return imageUrls;
+    }
+
+    public void setImageUrls(Set<String> imageUrls) {
+        this.imageUrls = imageUrls;
     }
 }

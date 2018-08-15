@@ -4,6 +4,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 public class TravelCreateBindingModel {
@@ -15,8 +16,7 @@ public class TravelCreateBindingModel {
     public TravelCreateBindingModel() {
     }
 
-    @NotNull
-    @NotEmpty
+    @NotEmpty(message = "{org.softuni.travel-together.validation.Field.empty}")
     public String getFrom() {
         return from;
     }
@@ -25,8 +25,7 @@ public class TravelCreateBindingModel {
         this.from = from;
     }
 
-    @NotNull
-    @NotEmpty
+    @NotEmpty(message = "{org.softuni.travel-together.validation.Field.empty}")
     public String getTo() {
         return to;
     }
@@ -35,6 +34,7 @@ public class TravelCreateBindingModel {
         this.to = to;
     }
 
+    @NotNull(message = "{org.softuni.travel-together.validation.Field.empty}")
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     public LocalDateTime getDepartureTime() {
         return departureTime;

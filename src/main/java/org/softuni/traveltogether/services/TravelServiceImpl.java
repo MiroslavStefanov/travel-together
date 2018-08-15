@@ -6,6 +6,8 @@ import org.softuni.traveltogether.domain.entities.Travel;
 import org.softuni.traveltogether.domain.entities.User;
 import org.softuni.traveltogether.domain.models.binding.TravelCreateBindingModel;
 import org.softuni.traveltogether.domain.models.service.TravelServiceModel;
+import org.softuni.traveltogether.domain.models.service.UserServiceModel;
+import org.softuni.traveltogether.domain.models.view.UserLinkViewModel;
 import org.softuni.traveltogether.repositories.DestinationRepository;
 import org.softuni.traveltogether.repositories.TravelRepository;
 import org.softuni.traveltogether.repositories.UserRepository;
@@ -16,7 +18,9 @@ import javax.transaction.Transactional;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -25,14 +29,12 @@ import java.util.stream.Collectors;
 public class TravelServiceImpl implements TravelService {
     private final TravelRepository travelRepository;
     private final UserRepository userRepository;
-    private final DestinationRepository destinationRepository;
     private final ModelMapper modelMapper;
     private final Validator validator;
 
-    public TravelServiceImpl(TravelRepository travelRepository, UserRepository userRepository, DestinationRepository destinationRepository, ModelMapper modelMapper, Validator validator) {
+    public TravelServiceImpl(TravelRepository travelRepository, UserRepository userRepository, ModelMapper modelMapper, Validator validator) {
         this.travelRepository = travelRepository;
         this.userRepository = userRepository;
-        this.destinationRepository = destinationRepository;
         this.modelMapper = modelMapper;
         this.validator = validator;
     }
@@ -47,15 +49,10 @@ public class TravelServiceImpl implements TravelService {
 
         try{
             Travel travel = this.modelMapper.map(travelCreateBindingModel, Travel.class);
-            String debug = SecurityContextHolder.getContext().getAuthentication().getName();
-            User currentUser = this.userRepository.findFirstByUsername(debug);
-            Destination fromDest = this.destinationRepository.findFirstByName(travelCreateBindingModel.getFrom());
-            Destination toDest = this.destinationRepository.findFirstByName(travelCreateBindingModel.getTo());
+            User currentUser = this.userRepository.findFirstByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
             travel.setPublisher(currentUser);
             travel.setPublishedAt(LocalDateTime.now());
-            travel.setFromDestination(fromDest);
-            travel.setToDestination(toDest);
-            travel = this.travelRepository.save(travel);
+            travel = this.travelRepository.saveAndFlush(travel);
             return travel.getId();
         } catch (Exception e) {
             //better handling of errors
@@ -66,10 +63,33 @@ public class TravelServiceImpl implements TravelService {
     }
 
     @Override
-    public List<TravelServiceModel> get5MostRecent() {
-        return this.travelRepository.findTop5ByOrderByPublishedAtDesc()
-                .stream()
-                .map(t -> this.modelMapper.map(t, TravelServiceModel.class))
-                .collect(Collectors.toList());
+    public String editTravel(String travelId, TravelCreateBindingModel travelCreateBindingModel) {
+        Set<ConstraintViolation<TravelCreateBindingModel>> errors = this.validator.validate(travelCreateBindingModel);
+        if(!errors.isEmpty()) {
+            //send errors data
+            //throw exception
+        }
+
+        try{
+            Travel travel = this.travelRepository.findById(travelId).orElse(null);
+            this.modelMapper.map(travelCreateBindingModel, travel);
+            travel = this.travelRepository.saveAndFlush(travel);
+            return travel.getId();
+        } catch (Exception e) {
+            //better handling of errors
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public void deleteTravel(String travelId) {
+        this.travelRepository.deleteById(travelId);
+        this.travelRepository.flush();
+    }
+
+    @Override
+    public TravelServiceModel getTravel(String id) {
+        return this.travelRepository.findById(id).map(t -> this.modelMapper.map(t, TravelServiceModel.class)).orElse(null);
     }
 }

@@ -2,14 +2,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <!--/*@thymesVar id="view" type="java.lang.String"*/-->
 <!--/*@thymesVar id="title" type="java.lang.String"*/-->
-<head th:insert="fragments/head" th:with="pageTitle = ${title}"></head>
-<span th:include="fragments/scripts-bundle"></span>
+<head th:insert="fragments/common/head" th:with="pageTitle = ${title}"></head>
+<span th:include="fragments/common/scripts-bundle"></span>
 <body>
 
-<header th:replace="fragments/header"></header>
+<header th:replace="fragments/common/header"></header>
 
 <main th:include="${view}"></main>
 
-<footer th:replace="fragments/footer"></footer>
+<footer th:replace="fragments/common/footer"></footer>
 </body>
 </html>

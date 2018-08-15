@@ -1,5 +1,72 @@
-.bg-resev {
-    background-color: #0080FF;
+.bg-red{
+    background-color: #fd4445;
+}
+
+.bg-yellow{
+    background-color: #ffaf00;
+}
+
+.bg-blue1{
+    background-color: #0091cf;
+}
+
+.bg-blue2{
+    background-color: #01395e;
+}
+
+.text-red{
+    color: #fd4445;
+}
+
+.text-yellow{
+    color: #ffaf00;
+}
+
+.text-blue1{
+    color: #0091cf;
+}
+
+.text-blue2{
+    color: #01395e;
+}
+
+.btn-yellow{
+    font-weight: bold;
+    background-color: #ffaf00;
+    color: white;
+}
+
+.btn-yellow:hover{
+    color: white;
+    background-color: #01395e;
+}
+
+.btn-blue{
+    font-weight: bold;
+    background-color: #0091cf;
+    color: white;
+}
+
+.btn-blue:hover{
+    color: white;
+    background-color: #01395e;
+}
+
+.btn-red{
+    font-weight: bold;
+    background-color: #fd4445;
+    color: white;
+}
+
+.btn-red:hover{
+    color: white;
+    background-color: #01395e;
+}
+
+#actions {
+    box-sizing: border-box;
+    border: #01395e solid 2px;
+    border-radius: 5px;
 }
 
 .bg-grey {
@@ -10,22 +77,8 @@
     background-color: #F3F3F3;
 }
 
-.text-resev {
-    color: #0080FF;
-}
-
-hr.thick{
-    height: 2px;
-}
-
-hr.dark{
-    color: #000;
-    background-color: #000;
-}
-
-hr.resev{
-    color: #0080FF;
-    background-color: #0080FF;
+.bg-grey3 {
+    background-color: #E5E5E5;
 }
 
 #map {
@@ -44,4 +97,122 @@ input.no-border, input.no-border:hover, input.no-border:focus, input.no-border:a
     outline: none;
     outline-offset: 0;
     box-shadow: none;
+}
+
+/* styles for '...' */
+.block-with-text {
+    /* hide text if it more than N lines  */
+    overflow: hidden;
+    /* for set '...' in absolute position */
+    position: relative;
+    /* use this value to count block height */
+    line-height: 1.2em;
+    /* max-height = line-height (1.2) * lines max number (3) */
+    max-height: 3.6em;
+    /* fix problem when last visible word doesn't adjoin right side  */
+    text-align: left;
+    /* place for '...' */
+    margin-right: -1em;
+    padding-right: 1em;
+}
+/* create the ... */
+.block-with-text:before {
+    /* points in the end */
+    content: '...';
+    /* absolute position */
+    position: absolute;
+    /* set position to right bottom corner of block */
+    right: 0;
+    padding-right: 5px;
+    bottom: 0;
+}
+/* hide ... if we have text, which is less than or equal to max lines */
+.block-with-text:after {
+    /* points in the end */
+    content: '';
+    /* absolute position */
+    position: absolute;
+    /* set position to right bottom corner of text */
+    right: 0;
+    margin-right: 5px;
+    /* set width and height */
+    width: 1em;
+    height: 1em;
+    margin-top: 0.2em;
+    /* bg color = bg color under block */
+    background: #F3F3F3;
+}
+
+.travel-body{
+    height: 450px;
+}
+
+img.travel-recent-picture{
+    max-height: 225px;
+}
+
+.scrollable-horizontal{
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.scrollable-vertical{
+    overflow-y: auto;
+}
+
+.h-450px{
+    height:450px;
+}
+
+.h-80{
+    height: 80%;
+}
+
+.h-40{
+    height: 40%;
+}
+
+.h-15{
+    height: 15%;
+}
+
+.autocomplete {
+    position: relative;
+    display: inline-block;
+}
+
+.autocomplete-items {
+    position: absolute;
+    border: 1px solid #d4d4d4;
+    border-bottom: none;
+    border-top: none;
+    z-index: 99;
+
+    top: 100%;
+    left: 0;
+    right: 0;
+}
+.autocomplete-items div {
+    padding: 10px;
+    cursor: pointer;
+    background-color: #fff;
+    border-bottom: 1px solid #d4d4d4;
+}
+.autocomplete-items div:hover {
+    background-color: #e9e9e9;
+}
+.autocomplete-active {
+    background-color: DodgerBlue !important;
+    color: #ffffff;
+}
+
+.mini-row {
+    width: 100%;
+    height: 25%;
+    box-sizing: border-box;
+    border-bottom: 2px solid #E5E5E5;
+}
+
+.mini-row:hover{
+    background-color: #F3F3F3;
 }

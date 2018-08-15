@@ -4,10 +4,7 @@ import org.softuni.traveltogether.domain.models.binding.UserRegisterBindingModel
 import org.softuni.traveltogether.services.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
@@ -42,5 +39,10 @@ public class UserController extends BaseController {
     @GetMapping("/login")
     public ModelAndView login(@RequestParam(required = false, name = "error") String error) {
         return super.view("user/login", error, "error");
+    }
+
+    @GetMapping("/profile/{username}")
+    public ModelAndView profile(@PathVariable("username") String username) {
+        return null;
     }
 }

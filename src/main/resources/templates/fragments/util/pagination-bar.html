@@ -1,0 +1,8 @@
+<div id="pagination-bar" class="container-fluid row d-flex justify-content-center btn-group-sm" th:fragment="pagination-bar" xmlns:th="http://www.w3.org/1999/xhtml">
+    <button id="prev" class="btn col-xs-1 m-1" onclick="pageService.prev()">&lt;</button>
+    <button id="left-ellipsis" class="btn col-xs-1 m-1" onclick="pageService.selectPage(this)">...</button>
+    <button class="btn-page btn col-xs-1 m-1" onclick="pageService.selectPage(this)"></button>
+    <button id="right-ellipsis" class="btn col-xs-1 m-1" onclick="pageService.selectPage(this)">...</button>
+    <button id="next" class="btn col-xs-1 m-1" onclick="pageService.next()">&gt;</button>
+</div>
+<script xmlns:th="http://www.w3.org/1999/xhtml" th:src="@{/scripts/util/pagination.js}"></script>

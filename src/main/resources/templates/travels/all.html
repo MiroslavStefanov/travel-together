@@ -1,35 +1,21 @@
 <div xmlns:th="http://www.thymeleaf.org"
     class="jumbotron-fluid pt-5">
 
-    <th:block th:include="fragments/travel-search"></th:block>
+    <th:block th:include="fragments/travel/travel-search"  th:with="allDestinations=${model}"></th:block>
 
-    <div class="container-fluid w-75 bg-grey2 mt-5">
-        <table class="table table-hover">
-            <thead>
-            <tr>
-                <th scope="col">From</th>
-                <th scope="col">To</th>
-                <th scope="col">Departure at</th>
-                <th scope="col">Published at</th>
-                <th scope="col">By</th>
-            </tr>
-            </thead>
-            <tbody id="table-content">
-                <tr class="template">
-                    <a class="travel-link">
-                        <td class="travel-from"></td>
-                        <td class="travel-to"></td>
-                        <td class="travel-departure"></td>
-                        <td class="travel-published"></td>
-                        <td class="travel-publisher"></td>
-                    </a>
-                </tr>
-            </tbody>
-        </table>
+    <div hidden>
+        <div id="map"></div>
+        <th:block th:include="fragments/util/carousel"></th:block>
+        <th:block th:include="fragments/travel/travels-row"></th:block>
+    </div>
 
-        <th:block th:include="fragments/pagination-bar"></th:block>
+    <div class="container-fluid mt-5">
+        <div id="all-travels"></div>
+
+        <th:block th:include="fragments/util/pagination-bar"></th:block>
     </div>
 
 </div>
+<script xmlns:th="http://www.w3.org/1999/xhtml" th:src="@{/scripts/map/get-photos.js}"></script>
 <script xmlns:th="http://www.w3.org/1999/xhtml" th:src="@{/scripts/travel/get-all.js}"></script>
 

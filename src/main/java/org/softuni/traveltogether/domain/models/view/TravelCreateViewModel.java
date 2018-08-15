@@ -7,22 +7,33 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 public class TravelCreateViewModel {
-    private String action;
+    private String targetUrl;
     private TravelCreateBindingModel bindingModel;
     private List<String> allDestinations;
 
-    public TravelCreateViewModel(String action, TravelCreateBindingModel bindingModel, List<String> allDestinations) {
-        this.action = action;
+    public TravelCreateViewModel(String targetUrl, TravelCreateBindingModel bindingModel, List<String> allDestinations) {
+        this.targetUrl = targetUrl;
         this.bindingModel = bindingModel;
         this.allDestinations = allDestinations;
     }
 
     public String getAction() {
-        return action;
+        if(this.targetUrl != null) {
+            String[] splitted = this.targetUrl.split("/");
+            if(splitted.length > 0) {
+                return splitted[splitted.length-1];
+            }
+            return null;
+        }
+        return null;
     }
 
-    public void setAction(String action) {
-        this.action = action;
+    public String getTargetUrl() {
+        return targetUrl;
+    }
+
+    public void setTargetUrl(String targetUrl) {
+        this.targetUrl = targetUrl;
     }
 
     @NotNull

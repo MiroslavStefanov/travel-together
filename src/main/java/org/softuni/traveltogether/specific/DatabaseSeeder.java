@@ -48,7 +48,7 @@ public class DatabaseSeeder {
         this.seedRoles();
         this.seedRootUser();
         this.seedDestinations();
-        //this.seedTravels();
+        this.seedTravels();
     }
 
     private void seedRoles() {
@@ -72,7 +72,7 @@ public class DatabaseSeeder {
                 add(roleRepository.findFirstByAuthority(UserRole.ROLE_ADMIN.toString()));
             }};
             user.setAuthorities(rootRoleSet);
-            this.userRepository.save(user);
+            this.userRepository.saveAndFlush(user);
         }
     }
 
@@ -94,10 +94,11 @@ public class DatabaseSeeder {
             Random random = new Random();
             allUsers.forEach(u -> {
                 Set<Travel> travels = new HashSet<>();
-                for (int i = 0; i < 20; i++) {
+                for (int i = 0; i < 300; i++) {
                     Travel travel = new Travel();
                     travel.setPublisher(u);
                     travel.setPublishedAt(LocalDateTime.now().minusDays(i));
+                    travel.setDepartureTime(LocalDateTime.now().plusDays(i));
                     travel.setFromDestination(allDestinations.get(random.nextInt(allDestinations.size() - 1)));
                     travel.setToDestination(allDestinations.get(random.nextInt(allDestinations.size() - 1)));
                     travel.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur convallis gravida dui, at tempor libero ultrices eu. Fusce lobortis odio nulla, volutpat auctor urna accumsan et. Suspendisse ullamcorper nunc non magna ultrices, ac maximus nibh facilisis. Mauris ut nisi nec sem mattis tempor. In eget diam tortor. Cras sodales tempus ex elementum ullamcorper. Nam blandit diam neque, id consequat nisi egestas sit amet. Vivamus tincidunt vestibulum lorem, ut semper eros. Praesent sed fringilla nisi, a efficitur lectus. Nulla scelerisque massa risus, vitae commodo sapien rutrum tincidunt. Integer sit amet mauris velit. Praesent scelerisque magna vel laoreet pulvinar. Phasellus suscipit venenatis diam nec condimentum. In eget dolor ac justo lobortis dignissim. Nulla dignissim efficitur neque ac convallis.");

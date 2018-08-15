@@ -1,0 +1,43 @@
+<header th:fragment="header" xmlns:th="http://www.thymeleaf.org"
+        xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-blue1">
+        <div class="container-fluid" th:with="homeUrl = ${#authorization.expression('isAuthenticated()')} ? '/home' : '/'">
+            <a class="navbar-brand" th:href="@{${homeUrl}}">TravelTogether</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
+                    aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{${homeUrl}}">Home</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item" sec:authorize="isAnonymous()">
+                        <a class="nav-link" th:href="@{/register}">Register</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="isAnonymous()">
+                        <a class="nav-link" th:href="@{/login}">Login</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                        <a class="nav-link" th:href="@{/profile/{username}(username=${#authentication.principal.username})}">Profile</a>
+                    </li>
+                    <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
+                        <a class="nav-link dropdown-toggle" href="#" id="travelsDropdown" data-toggle="dropdown"
+                           aria-haspopup="true" aria-expanded="false">
+                            Travels
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="travelsDropdown">
+                            <a class="dropdown-item" th:href="@{/travels}">All</a>
+                            <a class="dropdown-item" sec:authorize="isAuthenticated()" th:href="@{/travels/create}">Create</a>
+                        </div>
+                    </li>
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                        <a class="nav-link" th:href="@{/logout}">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>

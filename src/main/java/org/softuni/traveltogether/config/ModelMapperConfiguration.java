@@ -1,18 +1,29 @@
 package org.softuni.traveltogether.config;
 
+import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
-import org.softuni.traveltogether.domain.entities.Travel;
+import org.softuni.traveltogether.domain.entities.*;
 import org.softuni.traveltogether.domain.models.binding.TravelCreateBindingModel;
+import org.softuni.traveltogether.domain.models.service.CommentServiceModel;
+import org.softuni.traveltogether.domain.models.service.TravelRequestServiceModel;
 import org.softuni.traveltogether.domain.models.service.TravelServiceModel;
-import org.softuni.traveltogether.domain.models.view.TravelAllViewModel;
+import org.softuni.traveltogether.domain.models.service.UserServiceModel;
+import org.softuni.traveltogether.domain.models.view.*;
+import org.softuni.traveltogether.repositories.DestinationRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Configuration
 public class ModelMapperConfiguration {
     private final ModelMapper mapper;
+    private final DestinationRepository destinationRepository;
 
-    public ModelMapperConfiguration() {
+    public ModelMapperConfiguration(DestinationRepository destinationRepository) {
+        this.destinationRepository = destinationRepository;
         mapper = new ModelMapper();
         this.configure();
     }
@@ -23,33 +34,101 @@ public class ModelMapperConfiguration {
     }
 
     private void configure() {
+        //adding converters
+        this.addConverters();
+
         //mapping configuration
+        //COMMENT
+        this.commentServiceMapping();
 
         //TRAVEL
-        this.travelServiceMapping();
         this.travelCreateBindingMapping();
-        this.travelAllViewMapping();
+        this.travelCreateBindingInverseMapping();
+
+        //USER
+        this.homeViewMapping();
     }
+
+    private void addConverters() {
+        Converter<Set<User>, Set<UserServiceModel>> userSetServiceCon = ctx -> ctx.getSource()
+                .stream()
+                .map(u -> this.mapper.map(u, UserServiceModel.class))
+                .collect(Collectors.toSet());
+
+        Converter<List<Comment>, List<CommentServiceModel>> commentListServiceCon = ctx -> ctx.getSource()
+                .stream()
+                .map(c -> this.mapper.map(c, CommentServiceModel.class))
+                .collect(Collectors.toList());
+
+        Converter<Set<UserServiceModel>, Set<UserLinkViewModel>> userSetLinkViewCon = ctx -> ctx.getSource()
+                .stream()
+                .map(u -> this.mapper.map(u, UserLinkViewModel.class))
+                .collect(Collectors.toSet());
+
+        Converter<List<CommentServiceModel>, List<CommentViewModel>> commentListViewCon = ctx -> ctx.getSource()
+                .stream()
+                .map(c -> this.mapper.map(c, CommentViewModel.class))
+                .collect(Collectors.toList());
+
+        Converter<Set<Travel>, Set<TravelServiceModel>> travelSetServiceCon = ctx -> ctx.getSource()
+                .stream()
+                .map(t -> this.mapper.map(t, TravelServiceModel.class))
+                .collect(Collectors.toSet());
+
+        Converter<Set<TravelServiceModel>, Set<TravelLinkViewModel>> travelSetLinkCon = ctx -> ctx.getSource()
+                .stream()
+                .map(t -> this.mapper.map(t, TravelLinkViewModel.class))
+                .collect(Collectors.toSet());
+
+        Converter<Set<TravelRequest>, Set<TravelRequestServiceModel>> travelRequestServiceCon = ctx -> ctx.getSource()
+                .stream()
+                .map(r -> this.mapper.map(r, TravelRequestServiceModel.class))
+                .collect(Collectors.toSet());
+
+        Converter<Set<TravelRequestServiceModel>, Set<TravelRequestViewModel>> travelRequestViewCon = ctx -> ctx.getSource()
+                .stream()
+                .map(r -> this.mapper.map(r, TravelRequestViewModel.class))
+                .collect(Collectors.toSet());
+
+        this.mapper.addConverter(userSetServiceCon);
+        this.mapper.addConverter(commentListServiceCon);
+        this.mapper.addConverter(userSetLinkViewCon);
+        this.mapper.addConverter(commentListViewCon);
+        this.mapper.addConverter(travelSetServiceCon);
+        this.mapper.addConverter(travelSetLinkCon);
+        this.mapper.addConverter(travelRequestServiceCon);
+        this.mapper.addConverter(travelRequestViewCon);
+    }
+
+    //COMMENT
+    private void commentServiceMapping() {
+        this.mapper.createTypeMap(Comment.class, CommentServiceModel.class)
+                .addMappings(m -> m.skip(CommentServiceModel::setReplies));
+    }
+
 
     //TRAVEL
-    private void travelServiceMapping() {
-        this.mapper.createTypeMap(Travel.class, TravelServiceModel.class)
-                .addMappings(m -> m.map(t->t.getPublisher().getFullName(), TravelServiceModel::setPublisher));
-    }
-
     private void travelCreateBindingMapping() {
+        Converter<String, Destination> destinationConverter = ctx -> this.destinationRepository.findFirstByName(ctx.getSource());
+
         this.mapper.createTypeMap(TravelCreateBindingModel.class, Travel.class)
                 .addMappings(m -> {
-                    m.skip(Travel::setFromDestination);
-                    m.skip(Travel::setToDestination);
+                    m.using(destinationConverter).map(t -> t.getFrom(), Travel::setFromDestination);
+                    m.using(destinationConverter).map(TravelCreateBindingModel::getTo, Travel::setToDestination);
                 });
     }
 
-    private void travelAllViewMapping() {
-        this.mapper.createTypeMap(TravelServiceModel.class, TravelAllViewModel.class)
+    private void travelCreateBindingInverseMapping() {
+        this.mapper.createTypeMap(TravelServiceModel.class, TravelCreateBindingModel.class)
                 .addMappings(m -> {
-                    m.map(tsm -> tsm.getFromDestination().getName(), TravelAllViewModel::setFrom);
-                    m.map(tsm -> tsm.getToDestination().getName(), TravelAllViewModel::setTo);
+                    m.map(t->t.getFromDestination().getName(), TravelCreateBindingModel::setFrom);
+                    m.map(t->t.getToDestination().getName(), TravelCreateBindingModel::setTo);
                 });
+    }
+
+    //USER
+    private void homeViewMapping() {
+        this.mapper.createTypeMap(UserServiceModel.class, HomeViewModel.class)
+                .addMappings(m -> m.map(UserServiceModel::getTravels, HomeViewModel::setMyTravels));
     }
 }

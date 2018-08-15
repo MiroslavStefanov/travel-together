@@ -15,6 +15,7 @@ import java.util.Set;
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {
+    private static String DEFAULT_PROFIE_PICTURE_LINK = "/assets/profile-default.png";
 
     private String id;
     private String username;
@@ -23,16 +24,20 @@ public class User implements UserDetails {
     private String firstName;
     private String lastName;
     private String phoneNumber;
+    private String profilePictureLink;
     private boolean isAccountNonExpired;
     private boolean isAccountNonLocked;
     private boolean isCredentialsNonExpired;
     private boolean isEnabled;
     private Set<Role> authorities;
     private Set<Travel> travels;
-    private List<Comment> comments;
+    private Set<Travel> attendedTravels;
+/*    private List<Comment> comments;
+    private Set<TravelRequest> requests;*/
 
     public User() {
         this.authorities = new HashSet<>();
+        this.profilePictureLink = DEFAULT_PROFIE_PICTURE_LINK;
     }
 
     @Id
@@ -81,6 +86,14 @@ public class User implements UserDetails {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public String getProfilePictureLink() {
+        return profilePictureLink;
+    }
+
+    public void setProfilePictureLink(String profilePictureLink) {
+        this.profilePictureLink = profilePictureLink;
     }
 
     @NotNull
@@ -167,7 +180,21 @@ public class User implements UserDetails {
         this.travels = travels;
     }
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany(mappedBy = "attendants")
+    public Set<Travel> getAttendedTravels() {
+        return attendedTravels;
+    }
+
+    public void setAttendedTravels(Set<Travel> attendedTravels) {
+        this.attendedTravels = attendedTravels;
+    }
+
+    @Transient
+    public String getFullName() {
+        return this.firstName + " " + this.lastName;
+    }
+
+    /*@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     public List<Comment> getComments() {
         return comments;
     }
@@ -176,8 +203,12 @@ public class User implements UserDetails {
         this.comments = comments;
     }
 
-    @Transient
-    public String getFullName() {
-        return this.firstName + " " + this.lastName;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    public Set<TravelRequest> getRequests() {
+        return requests;
     }
+
+    public void setRequests(Set<TravelRequest> requests) {
+        this.requests = requests;
+    }*/
 }

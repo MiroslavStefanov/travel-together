@@ -22,6 +22,7 @@ public class Travel {
     private User publisher;
     private Set<User> attendants;
     private List<Comment> comments;
+    private Set<TravelRequest> requests;
 
     public Travel() {
         this.attendants = new HashSet<>();
@@ -43,7 +44,7 @@ public class Travel {
         this.id = id;
     }
 
-    @Column(columnDefinition = "TEXT")
+    @Lob
     public String getDescription() {
         return description;
     }
@@ -62,6 +63,8 @@ public class Travel {
         this.publishedAt = publishedAt;
     }
 
+    @NotNull
+    @Column(nullable = false)
     public LocalDateTime getDepartureTime() {
         return departureTime;
     }
@@ -70,7 +73,8 @@ public class Travel {
         this.departureTime = departureTime;
     }
 
-    @ManyToOne
+    @NotNull
+    @ManyToOne(optional = false, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     public Destination getFromDestination() {
         return fromDestination;
     }
@@ -100,6 +104,9 @@ public class Travel {
     }
 
     @ManyToMany
+    @JoinTable(name = "travels_attendants",
+            joinColumns = @JoinColumn(name = "travel_id"),
+            inverseJoinColumns =  @JoinColumn(name = "attendant_id"))
     public Set<User> getAttendants() {
         return attendants;
     }
@@ -115,5 +122,21 @@ public class Travel {
 
     public void setComments(List<Comment> comments) {
         this.comments = comments;
+    }
+
+    @OneToMany(mappedBy = "travel", cascade = CascadeType.ALL, orphanRemoval = true)
+    public Set<TravelRequest> getRequests() {
+        return requests;
+    }
+
+    public void setRequests(Set<TravelRequest> requests) {
+        this.requests = requests;
+    }
+
+    @Transient
+    public String getName() {
+        if(this.toDestination != null)
+            return this.toDestination.getName();
+        return null;
     }
 }

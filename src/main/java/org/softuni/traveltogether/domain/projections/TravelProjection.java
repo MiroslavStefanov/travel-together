@@ -12,8 +12,7 @@ public interface TravelProjection {
 
     String getId();
 
-    @Value("#{@getModelMapper.map(target, T(org.softuni.traveltogether.domain.models.service.TravelServiceModel)).getShortDescription()}")
-    String getShortDescription();
+    String getDescription();
 
     LocalDateTime getPublishedAt();
 

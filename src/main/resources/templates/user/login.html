@@ -1,15 +1,15 @@
-<div class="container-fluid p-5" xmlns:th="http://www.thymeleaf.org">
+<div class="container col-xs-12 col-sm-10 col-md-8 col-lg-6 p-5" xmlns:th="http://www.thymeleaf.org">
 
-    <div class="container w-50 bg-white p-4">
-        <h1 class="text-lg-center" th:text="'Login'"></h1>
+    <div class="container w-100 bg-white p-4">
+        <h1 class="text-center font-weight-bold pb-4 text-blue2" th:text="'Login'"></h1>
 
         <form method="post">
-            <div class="form-group col-sm-12">
-                <label for="username">Username</label>
+            <div class="form-group w-100">
+                <label for="username" class="text-blue2">Username</label>
                 <input class="form-control" type="text" id="username" name="username" th:classappend="${error != null ? 'is-invalid' : ''}"/>
             </div>
-            <div class="form-group col-sm-12">
-                <label for="password">Password</label>
+            <div class="form-group w-100">
+                <label for="password" class="text-blue2">Password</label>
                 <input class="form-control" type="password" id="password" name="password" th:classappend="${error != null ? 'is-invalid' : ''}"/>
             </div>
             <small th:if="${error != null}"
@@ -18,7 +18,7 @@
                    th:value="${_csrf.token}" />
             <div class="form-group">
                 <div class="d-flex justify-content-center">
-                    <input type="submit" class="btn btn-primary" th:value="'Login'"/>
+                    <input type="submit" class="btn btn-blue" th:value="'Login'"/>
                 </div>
             </div>
         </form>
