@@ -16,18 +16,14 @@ public abstract class BaseController {
     }
 
     protected ModelAndView view(String viewName, Object model, String modelName) {
-        ModelAndView modelAndView = new ModelAndView();
+        ModelAndView modelAndView = new ModelAndView(BASE_PAGE_LAYOUT_VIEW_NAME);
         modelAndView.addObject(modelName, model);
         modelAndView.addObject(BASE_PAGE_VIEW_NAME, viewName);
-        modelAndView.setViewName(BASE_PAGE_LAYOUT_VIEW_NAME);
 
         return modelAndView;
     }
 
     protected ModelAndView redirect(String location) {
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("redirect:" + location);
-
-        return modelAndView;
+        return new ModelAndView("redirect:" + location);
     }
 }

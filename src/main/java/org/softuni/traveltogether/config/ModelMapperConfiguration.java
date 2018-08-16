@@ -4,7 +4,6 @@ import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.softuni.traveltogether.domain.entities.*;
 import org.softuni.traveltogether.domain.models.binding.TravelCreateBindingModel;
-import org.softuni.traveltogether.domain.models.service.CommentServiceModel;
 import org.softuni.traveltogether.domain.models.service.TravelRequestServiceModel;
 import org.softuni.traveltogether.domain.models.service.TravelServiceModel;
 import org.softuni.traveltogether.domain.models.service.UserServiceModel;
@@ -13,7 +12,6 @@ import org.softuni.traveltogether.repositories.DestinationRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -38,8 +36,6 @@ public class ModelMapperConfiguration {
         this.addConverters();
 
         //mapping configuration
-        //COMMENT
-        this.commentServiceMapping();
 
         //TRAVEL
         this.travelCreateBindingMapping();
@@ -55,20 +51,11 @@ public class ModelMapperConfiguration {
                 .map(u -> this.mapper.map(u, UserServiceModel.class))
                 .collect(Collectors.toSet());
 
-        Converter<List<Comment>, List<CommentServiceModel>> commentListServiceCon = ctx -> ctx.getSource()
-                .stream()
-                .map(c -> this.mapper.map(c, CommentServiceModel.class))
-                .collect(Collectors.toList());
 
         Converter<Set<UserServiceModel>, Set<UserLinkViewModel>> userSetLinkViewCon = ctx -> ctx.getSource()
                 .stream()
                 .map(u -> this.mapper.map(u, UserLinkViewModel.class))
                 .collect(Collectors.toSet());
-
-        Converter<List<CommentServiceModel>, List<CommentViewModel>> commentListViewCon = ctx -> ctx.getSource()
-                .stream()
-                .map(c -> this.mapper.map(c, CommentViewModel.class))
-                .collect(Collectors.toList());
 
         Converter<Set<Travel>, Set<TravelServiceModel>> travelSetServiceCon = ctx -> ctx.getSource()
                 .stream()
@@ -91,19 +78,11 @@ public class ModelMapperConfiguration {
                 .collect(Collectors.toSet());
 
         this.mapper.addConverter(userSetServiceCon);
-        this.mapper.addConverter(commentListServiceCon);
         this.mapper.addConverter(userSetLinkViewCon);
-        this.mapper.addConverter(commentListViewCon);
         this.mapper.addConverter(travelSetServiceCon);
         this.mapper.addConverter(travelSetLinkCon);
         this.mapper.addConverter(travelRequestServiceCon);
         this.mapper.addConverter(travelRequestViewCon);
-    }
-
-    //COMMENT
-    private void commentServiceMapping() {
-        this.mapper.createTypeMap(Comment.class, CommentServiceModel.class)
-                .addMappings(m -> m.skip(CommentServiceModel::setReplies));
     }
 
 
@@ -113,7 +92,7 @@ public class ModelMapperConfiguration {
 
         this.mapper.createTypeMap(TravelCreateBindingModel.class, Travel.class)
                 .addMappings(m -> {
-                    m.using(destinationConverter).map(t -> t.getFrom(), Travel::setFromDestination);
+                    m.using(destinationConverter).map(TravelCreateBindingModel::getFrom, Travel::setFromDestination);
                     m.using(destinationConverter).map(TravelCreateBindingModel::getTo, Travel::setToDestination);
                 });
     }

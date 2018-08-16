@@ -12,7 +12,7 @@ public interface TravelProjection {
 
     String getId();
 
-    String getDescription();
+    //String getDescription();
 
     LocalDateTime getPublishedAt();
 

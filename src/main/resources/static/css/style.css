@@ -63,9 +63,21 @@
     background-color: #01395e;
 }
 
+.notification-badge {
+    font-weight: bold;
+    background-color: #fd4445;
+    color: white;
+}
+
 #actions {
     box-sizing: border-box;
     border: #01395e solid 2px;
+    border-radius: 5px;
+}
+
+.border-blue2 {
+    box-sizing: border-box;
+    border: #01395e solid;
     border-radius: 5px;
 }
 
@@ -81,66 +93,12 @@
     background-color: #E5E5E5;
 }
 
+span.text-blue1{
+    font-weight: lighter;
+}
+
 #map {
     height: 100%;
-}
-
-.bottom-align-text {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-}
-
-input.no-border, input.no-border:hover, input.no-border:focus, input.no-border:active {
-    background: transparent;
-    border: 0 none transparent;
-    outline: none;
-    outline-offset: 0;
-    box-shadow: none;
-}
-
-/* styles for '...' */
-.block-with-text {
-    /* hide text if it more than N lines  */
-    overflow: hidden;
-    /* for set '...' in absolute position */
-    position: relative;
-    /* use this value to count block height */
-    line-height: 1.2em;
-    /* max-height = line-height (1.2) * lines max number (3) */
-    max-height: 3.6em;
-    /* fix problem when last visible word doesn't adjoin right side  */
-    text-align: left;
-    /* place for '...' */
-    margin-right: -1em;
-    padding-right: 1em;
-}
-/* create the ... */
-.block-with-text:before {
-    /* points in the end */
-    content: '...';
-    /* absolute position */
-    position: absolute;
-    /* set position to right bottom corner of block */
-    right: 0;
-    padding-right: 5px;
-    bottom: 0;
-}
-/* hide ... if we have text, which is less than or equal to max lines */
-.block-with-text:after {
-    /* points in the end */
-    content: '';
-    /* absolute position */
-    position: absolute;
-    /* set position to right bottom corner of text */
-    right: 0;
-    margin-right: 5px;
-    /* set width and height */
-    width: 1em;
-    height: 1em;
-    margin-top: 0.2em;
-    /* bg color = bg color under block */
-    background: #F3F3F3;
 }
 
 .travel-body{
@@ -149,6 +107,15 @@ input.no-border, input.no-border:hover, input.no-border:focus, input.no-border:a
 
 img.travel-recent-picture{
     max-height: 225px;
+}
+
+img.profile-picture{
+    max-width: 400px;
+    max-height: 400px;
+}
+
+img{
+    max-height: 100%;
 }
 
 .scrollable-horizontal{
@@ -162,6 +129,11 @@ img.travel-recent-picture{
 
 .h-450px{
     height:450px;
+}
+
+.separator{
+    height: 150px;
+    width: 100%;
 }
 
 .h-80{

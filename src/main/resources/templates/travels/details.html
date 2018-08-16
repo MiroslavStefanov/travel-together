@@ -1,5 +1,4 @@
 <div id="content" xmlns:th="http://www.thymeleaf.org"
-     xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
      th:with="userId = ${@userServiceImpl.findUserByUsername(#authentication.name).id}">
     <div class="jumbotron-fluid p-3">
         <h1 class="text-center">Travel Details</h1>
@@ -48,7 +47,7 @@
         </div>
 
         <th:block th:with="hasRequested = ${#sets.contains(model.allRequestingUserIds, userId)}, hasAttended = ${#sets.contains(model.allParticipatedUserIds, userId)}">
-            <div th:if="${!hasAttended}">
+            <div class="p-4" th:if="${!hasAttended}">
                 <div class="container d-flex justify-content-end" th:if="${!hasRequested}">
                     <button type="submit" id="send-request-btn" class="btn btn-blue">Participate</button>
                 </div>
@@ -57,17 +56,6 @@
                 </div>
             </div>
         </th:block>
-
-        <div class="container bg-grey2 mt-5 mb-3" id="comments">
-            <h2>Comments:</h2>
-            <div class="container w-50 scrollable-vertical">
-                <div class="bg-info mt-4" th:each="comment : *{comments}">
-                    <p th:text="${comment.content}"></p>
-                    <small th:text="|by ${comment.user.fullName} at ${#temporals.format(comment.dateTime)}|"></small>
-                </div>
-            </div>
-        </div>
-
     </div>
 </div>
 <script xmlns:th="http://www.thymeleaf.org" th:inline="javascript">

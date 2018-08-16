@@ -1,13 +1,10 @@
 package org.softuni.traveltogether.domain.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -17,11 +14,9 @@ public class Destination {
     private String name;
     private Double latitude;
     private Double longitude;
-    private Set<Travel> travels;
     private Set<String> imageUrls;
 
     public Destination() {
-        this.travels = new HashSet<>();
     }
 
     public Destination(String name, Double latitude, Double longitude) {
@@ -74,16 +69,6 @@ public class Destination {
 
     public void setLongitude(Double longitude) {
         this.longitude = longitude;
-    }
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "toDestination", cascade = CascadeType.ALL, orphanRemoval = true)
-    public Set<Travel> getTravels() {
-        return travels;
-    }
-
-    public void setTravels(Set<Travel> travels) {
-        this.travels = travels;
     }
 
     @Lob

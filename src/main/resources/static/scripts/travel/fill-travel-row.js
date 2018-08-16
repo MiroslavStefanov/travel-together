@@ -10,7 +10,6 @@ function fillRow(data) {
         let currentCarouselId = 'carousel'+i.toString();
         current.find('.travel-text').text(to.name);
         current.find('.travel-start').text('From: ' +  from.name);
-        current.find('.travel-desc').text(t.description);
         current.find('.travel-publisher').text('by '+publisher);
         current.find('a').attr('href', '/travels/' + t.id);
 

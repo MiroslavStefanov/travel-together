@@ -21,12 +21,10 @@ public class Travel {
     private Destination toDestination;
     private User publisher;
     private Set<User> attendants;
-    private List<Comment> comments;
     private Set<TravelRequest> requests;
 
     public Travel() {
         this.attendants = new HashSet<>();
-        this.comments = new ArrayList<>();
     }
 
     @Id
@@ -74,7 +72,7 @@ public class Travel {
     }
 
     @NotNull
-    @ManyToOne(optional = false, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne
     public Destination getFromDestination() {
         return fromDestination;
     }
@@ -84,7 +82,7 @@ public class Travel {
     }
 
     @NotNull
-    @ManyToOne(optional = false, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne
     public Destination getToDestination() {
         return toDestination;
     }
@@ -94,7 +92,7 @@ public class Travel {
     }
 
     @NotNull
-    @ManyToOne(optional = false)
+    @ManyToOne
     public User getPublisher() {
         return publisher;
     }
@@ -103,10 +101,12 @@ public class Travel {
         this.publisher = publisher;
     }
 
-    @ManyToMany
-    @JoinTable(name = "travels_attendants",
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinTable(
+            name = "travels_attendants",
             joinColumns = @JoinColumn(name = "travel_id"),
-            inverseJoinColumns =  @JoinColumn(name = "attendant_id"))
+            inverseJoinColumns =  @JoinColumn(name = "attendant_id")
+    )
     public Set<User> getAttendants() {
         return attendants;
     }
@@ -115,16 +115,7 @@ public class Travel {
         this.attendants = attendants;
     }
 
-    @OneToMany(mappedBy = "travel", cascade = CascadeType.ALL, orphanRemoval = true)
-    public List<Comment> getComments() {
-        return comments;
-    }
-
-    public void setComments(List<Comment> comments) {
-        this.comments = comments;
-    }
-
-    @OneToMany(mappedBy = "travel", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "travel", cascade = CascadeType.REMOVE, orphanRemoval = true)
     public Set<TravelRequest> getRequests() {
         return requests;
     }

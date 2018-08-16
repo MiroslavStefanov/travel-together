@@ -1,42 +1,40 @@
 package org.softuni.traveltogether.services;
 
 import org.modelmapper.ModelMapper;
-import org.softuni.traveltogether.domain.entities.Destination;
+import org.softuni.traveltogether.common.authentication.AuthenticationWrapper;
 import org.softuni.traveltogether.domain.entities.Travel;
+import org.softuni.traveltogether.domain.entities.TravelRequest;
 import org.softuni.traveltogether.domain.entities.User;
 import org.softuni.traveltogether.domain.models.binding.TravelCreateBindingModel;
 import org.softuni.traveltogether.domain.models.service.TravelServiceModel;
-import org.softuni.traveltogether.domain.models.service.UserServiceModel;
-import org.softuni.traveltogether.domain.models.view.UserLinkViewModel;
-import org.softuni.traveltogether.repositories.DestinationRepository;
 import org.softuni.traveltogether.repositories.TravelRepository;
+import org.softuni.traveltogether.repositories.TravelRequestRepository;
 import org.softuni.traveltogether.repositories.UserRepository;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
 public class TravelServiceImpl implements TravelService {
     private final TravelRepository travelRepository;
     private final UserRepository userRepository;
+    private final TravelRequestRepository travelRequestRepository;
     private final ModelMapper modelMapper;
     private final Validator validator;
+    private final AuthenticationWrapper authenticationWrapper;
 
-    public TravelServiceImpl(TravelRepository travelRepository, UserRepository userRepository, ModelMapper modelMapper, Validator validator) {
+    public TravelServiceImpl(TravelRepository travelRepository, UserRepository userRepository, TravelRequestRepository travelRequestRepository, ModelMapper modelMapper, Validator validator, AuthenticationWrapper authenticationWrapper) {
         this.travelRepository = travelRepository;
         this.userRepository = userRepository;
+        this.travelRequestRepository = travelRequestRepository;
         this.modelMapper = modelMapper;
         this.validator = validator;
+        this.authenticationWrapper = authenticationWrapper;
     }
 
     @Override
@@ -49,7 +47,7 @@ public class TravelServiceImpl implements TravelService {
 
         try{
             Travel travel = this.modelMapper.map(travelCreateBindingModel, Travel.class);
-            User currentUser = this.userRepository.findFirstByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+            User currentUser = this.userRepository.findFirstByUsername(this.authenticationWrapper.getAuthentication().getName());
             travel.setPublisher(currentUser);
             travel.setPublishedAt(LocalDateTime.now());
             travel = this.travelRepository.saveAndFlush(travel);
@@ -85,7 +83,6 @@ public class TravelServiceImpl implements TravelService {
     @Override
     public void deleteTravel(String travelId) {
         this.travelRepository.deleteById(travelId);
-        this.travelRepository.flush();
     }
 
     @Override

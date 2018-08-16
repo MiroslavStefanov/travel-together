@@ -1,8 +1,11 @@
 package org.softuni.traveltogether.services;
 
 import org.modelmapper.ModelMapper;
+import org.softuni.traveltogether.domain.entities.Travel;
+import org.softuni.traveltogether.domain.entities.TravelRequest;
 import org.softuni.traveltogether.domain.entities.User;
 import org.softuni.traveltogether.domain.models.binding.UserRegisterBindingModel;
+import org.softuni.traveltogether.domain.models.service.TravelRequestServiceModel;
 import org.softuni.traveltogether.domain.models.service.UserServiceModel;
 import org.softuni.traveltogether.repositories.RoleRepository;
 import org.softuni.traveltogether.repositories.UserRepository;
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -61,6 +65,21 @@ public class UserServiceImpl implements UserService {
     public UserServiceModel findUserByUsername(String username) {
         User user = (User)this.loadUserByUsername(username);
         return this.modelMapper.map(user, UserServiceModel.class);
+    }
+
+    @Override
+    public Set<TravelRequestServiceModel> getAllRequests(String username) {
+        User user = this.userRepository.findFirstByUsername(username);
+        if(user != null) {
+            Set<TravelRequestServiceModel> requests = new HashSet<>();
+            for (Travel travel : user.getTravels()) {
+                for (TravelRequest travelRequest : travel.getRequests()) {
+                    requests.add(this.modelMapper.map(travelRequest, TravelRequestServiceModel.class));
+                }
+            }
+            return requests;
+        }
+        return null;
     }
 
     @Override

@@ -15,7 +15,6 @@ public class TravelDetailsViewModel {
     private LocalDateTime publishedAt;
     private String description;
     private Set<UserLinkViewModel> attendants;
-    private List<CommentViewModel> comments;
     private Set<TravelRequestViewModel> requests;
 
     public TravelDetailsViewModel() {
@@ -87,14 +86,6 @@ public class TravelDetailsViewModel {
         this.attendants = attendants;
     }
 
-    public List<CommentViewModel> getComments() {
-        return comments;
-    }
-
-    public void setComments(List<CommentViewModel> comments) {
-        this.comments = comments;
-    }
-
     public Set<TravelRequestViewModel> getRequests() {
         return requests;
     }
@@ -104,7 +95,7 @@ public class TravelDetailsViewModel {
     }
 
     public Set<String> getAllRequestingUserIds() {
-        return this.requests.stream().map(TravelRequestViewModel::getUserId).collect(Collectors.toSet());
+        return this.requests.stream().map(r -> r.getUser().getId()).collect(Collectors.toSet());
     }
 
     public Set<String> getAllParticipatedUserIds() {
@@ -112,6 +103,6 @@ public class TravelDetailsViewModel {
     }
 
     public String getRequestByUserId(String userId) {
-        return this.requests.stream().filter(r -> r.getUserId().equals(userId)).findFirst().map(TravelRequestViewModel::getId).orElse(null);
+        return this.requests.stream().filter(r -> r.getUser().getId().equals(userId)).findFirst().map(TravelRequestViewModel::getId).orElse(null);
     }
 }

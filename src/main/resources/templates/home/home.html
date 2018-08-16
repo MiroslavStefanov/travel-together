@@ -4,33 +4,12 @@
 
     <div class="container w-100">
         <div class="row d-flex justify-content-around">
-            <div class="col-lg-4 col-md-5 col-sm-7 bg-blue1 h-450px rounded my-5 mx-1">
-                <div class="w-100 h-15 d-flex flex-column justify-content-center">
-                    <h3 class="text-center text-light my-auto">My travels</h3>
-                </div>
-                <div class="h-80 scrollable-vertical bg-white rounded m-1">
-                    <div class="mini-row d-flex align-items-center" th:each="travel : ${model.myTravels}">
-                        <a th:href="@{/travels/{id}(id=${travel.id})}">
-                            <h5 class="pl-3 text-blue2" th:text="${travel.name}"></h5>
-                            <div class="pl-3">
-                                <small class="text-muted" th:text="|Departure at ${#temporals.format(travel.departureTime)}|"></small>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-5 col-sm-7 bg-blue1 h-450px rounded my-5 mx-1">
-                <div class="w-100 h-15 d-flex flex-column justify-content-center">
-                    <h3 class="text-center text-light">Attended travels</h3>
-                </div>
-                <div class="h-80 scrollable-vertical bg-white rounded m-1">
-                    <div class="mini-row d-flex align-items-center" th:each="travel : ${model.attendedTravels}">
-                        <a th:href="@{/travels/{id}(id=${travel.id})}">
-                            <h5 class="pl-3 text-blue2" th:text="${travel.name}"></h5>
-                        </a>
-                    </div>
-                </div>
-            </div>
+            <th:block th:include="fragments/scrollable-box"
+                      th:with="boxTitle='My travels',altText='No published travels',collection=${model.myTravels},template='fragments/travel/travel-link-content'">
+            </th:block>
+            <th:block th:include="fragments/scrollable-box"
+                      th:with="boxTitle='Attended travels',altText='No attended travels',collection=${model.attendedTravels},template='fragments/travel/travel-link-content'">
+            </th:block>
         </div>
     </div>
 

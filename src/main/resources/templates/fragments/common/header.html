@@ -21,7 +21,10 @@
                         <a class="nav-link" th:href="@{/login}">Login</a>
                     </li>
                     <li class="nav-item" sec:authorize="isAuthenticated()">
-                        <a class="nav-link" th:href="@{/profile/{username}(username=${#authentication.principal.username})}">Profile</a>
+                        <a class="nav-link" th:href="@{/profile/{username}(username=${#authentication.principal.username})}">Profile
+                            <!--/*@thymesVar id="requestCount" type="java.lang.Integer"*/-->
+                            <span class="badge notification-badge" th:if="${requestCount > 0}" th:text="${requestCount}"></span>
+                        </a>
                     </li>
                     <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
                         <a class="nav-link dropdown-toggle" href="#" id="travelsDropdown" data-toggle="dropdown"

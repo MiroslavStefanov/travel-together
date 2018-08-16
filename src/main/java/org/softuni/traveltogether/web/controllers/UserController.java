@@ -1,7 +1,10 @@
 package org.softuni.traveltogether.web.controllers;
 
+import org.modelmapper.ModelMapper;
 import org.softuni.traveltogether.domain.models.binding.UserRegisterBindingModel;
+import org.softuni.traveltogether.domain.models.view.UserProfileViewModel;
 import org.softuni.traveltogether.services.UserService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -11,10 +14,11 @@ import javax.validation.Valid;
 
 @Controller
 public class UserController extends BaseController {
-
+    private final ModelMapper modelMapper;
     private final UserService userService;
 
-    public UserController(UserService userService) {
+    public UserController(ModelMapper modelMapper, UserService userService) {
+        this.modelMapper = modelMapper;
         this.userService = userService;
     }
 
@@ -43,6 +47,12 @@ public class UserController extends BaseController {
 
     @GetMapping("/profile/{username}")
     public ModelAndView profile(@PathVariable("username") String username) {
-        return null;
+        return super.view("user/profile", this.modelMapper.map(this.userService.findUserByUsername(username), UserProfileViewModel.class), "user");
+    }
+
+    @GetMapping("/profile/${username}/edit")
+    @PreAuthorize("#username.equals(principal.username)")
+    public ModelAndView editProfile(@PathVariable("username") String username) {
+        return super.view("user/edit");
     }
 }

@@ -1,0 +1,13 @@
+<div class="col-lg-4 col-md-6 col-sm-10 bg-blue1 h-450px rounded my-5 mx-1" xmlns:th="http://www.w3.org/1999/xhtml">
+    <div class="w-100 h-15 d-flex flex-column justify-content-center">
+        <h3 class="text-center text-light my-auto" th:text="${boxTitle}"></h3>
+    </div>
+    <div class="h-80 scrollable-vertical bg-white rounded m-1">
+        <div class="mini-row d-flex align-items-center" th:if="${#sets.isEmpty(collection)}">
+            <h5 class="text-muted text-center w-100" th:text="${altText}"></h5>
+        </div>
+        <div class="mini-row d-flex align-items-center" th:each="item : ${collection}">
+            <th:block th:include="${template}" th:with="item=${item}"></th:block>
+        </div>
+    </div>
+</div>

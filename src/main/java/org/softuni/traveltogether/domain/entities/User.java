@@ -32,11 +32,10 @@ public class User implements UserDetails {
     private Set<Role> authorities;
     private Set<Travel> travels;
     private Set<Travel> attendedTravels;
-/*    private List<Comment> comments;
-    private Set<TravelRequest> requests;*/
 
     public User() {
         this.authorities = new HashSet<>();
+        this.attendedTravels = new HashSet<>();
         this.profilePictureLink = DEFAULT_PROFIE_PICTURE_LINK;
     }
 
@@ -171,7 +170,7 @@ public class User implements UserDetails {
         this.authorities = authorities;
     }
 
-    @OneToMany(mappedBy = "publisher", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "publisher", cascade = CascadeType.REMOVE, orphanRemoval = true)
     public Set<Travel> getTravels() {
         return travels;
     }
@@ -180,7 +179,7 @@ public class User implements UserDetails {
         this.travels = travels;
     }
 
-    @ManyToMany(mappedBy = "attendants")
+    @ManyToMany(mappedBy = "attendants", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     public Set<Travel> getAttendedTravels() {
         return attendedTravels;
     }
@@ -193,22 +192,4 @@ public class User implements UserDetails {
     public String getFullName() {
         return this.firstName + " " + this.lastName;
     }
-
-    /*@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    public List<Comment> getComments() {
-        return comments;
-    }
-
-    public void setComments(List<Comment> comments) {
-        this.comments = comments;
-    }
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    public Set<TravelRequest> getRequests() {
-        return requests;
-    }
-
-    public void setRequests(Set<TravelRequest> requests) {
-        this.requests = requests;
-    }*/
 }

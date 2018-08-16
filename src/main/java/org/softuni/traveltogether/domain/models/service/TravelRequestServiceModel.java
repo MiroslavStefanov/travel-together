@@ -1,5 +1,7 @@
 package org.softuni.traveltogether.domain.models.service;
 
+import java.util.Objects;
+
 public class TravelRequestServiceModel {
     private String id;
     private UserServiceModel user;
@@ -30,5 +32,18 @@ public class TravelRequestServiceModel {
 
     public void setTravel(TravelServiceModel travel) {
         this.travel = travel;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(!(obj instanceof TravelRequestServiceModel))
+            return false;
+
+        return this.getId().equals(((TravelRequestServiceModel) obj).getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.id);
     }
 }

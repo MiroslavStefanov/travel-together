@@ -1,0 +1,6 @@
+<a th:href="@{/travels/{id}(id=${item.id})}" th:with="travel=${item}">
+    <h5 class="pl-3 text-blue2" th:text="${travel.name}"></h5>
+    <div class="pl-3">
+        <small class="text-muted" th:text="|Departure at ${#temporals.format(travel.departureTime)}|"></small>
+    </div>
+</a>
