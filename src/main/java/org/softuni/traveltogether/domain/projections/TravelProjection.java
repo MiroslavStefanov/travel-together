@@ -12,8 +12,6 @@ public interface TravelProjection {
 
     String getId();
 
-    //String getDescription();
-
     LocalDateTime getPublishedAt();
 
     LocalDateTime getDepartureTime();

@@ -1,21 +1,36 @@
-<!--
-<a th:href="@{/travels/{id}(id=${item.id})}" th:with="travelRequest=${item}">
-    <h5 class="pl-3 text-blue2" th:text="${travel.name}"></h5>
-    <div class="pl-3">
-        <small class="text-muted" th:text="|Departure at ${#temporals.format(travel.departureTime)}|"></small>
-    </div>
-</a>-->
-
-<div class="touch-hover container-fluid h-100" xmlns:th="http://www.w3.org/1999/xhtml">
+<div class="touch-hover container-fluid h-100" th:id="|request-${item.id}|" xmlns:th="http://www.w3.org/1999/xhtml">
     <div class="row p-1 h-100" th:object="${item.user}">
         <div class="col-4">
             <img class="img-fluid" th:src="*{profilePictureLink}"/>
         </div>
-        <div class="col-8 pl-1 d-flex align-items-center">
-            <p class="text-blue1">
-                <a class="text-blue2" th:href="@{/profile/{username}(username=*{username})}" th:text="*{fullName}"></a>
-                 has requested to attend your travel
-            </p>
+        <div class="col-8 p-0 d-flex flex-column justify-content-center">
+            <div class="my-auto">
+                <p class="text-blue1 mb-0">
+                    <a class="text-blue2" th:href="@{/profile/{username}(username=*{username})}" th:text="*{fullName}"></a>
+                    has requested to attend your travel
+                </p>
+            </div>
+            <div class="btn-group-sm row w-100 justify-content-end mt-auto" th:id="${item.id}">
+                <button class="btn btn-blue mr-2 btn-accept">Accept</button>
+                <button class="btn btn-red ml-2 btn-reject">Reject</button>
+            </div>
         </div>
     </div>
 </div>
+<script xmlns:th="http://www.w3.org/1999/xhtml" th:src="@{/scripts/travel-request/request-service.js}"></script>
+<script xmlns:th="http://www.thymeleaf.org" th:inline="javascript">
+    let requestId = [[${item.id}]];
+    let travelId = [[${item.travel.id}]];
+    let userId = [[${item.user.id}]];
+    let callback = () => {
+        let btnGroup = $('#' + requestId);
+        btnGroup.remove();
+    };
+    $('.btn-accept').click(() => {
+        acceptRequest(requestId, travelId, userId, callback);
+    });
+
+    $('.btn-reject').click(() => {
+        deleteRequest(requestId, callback);
+    })
+</script>

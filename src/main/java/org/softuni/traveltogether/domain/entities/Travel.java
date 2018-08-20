@@ -1,14 +1,12 @@
 package org.softuni.traveltogether.domain.entities;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Immutable;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "travels")
@@ -101,14 +99,15 @@ public class Travel {
         this.publisher = publisher;
     }
 
-    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinTable(
             name = "travels_attendants",
             joinColumns = @JoinColumn(name = "travel_id"),
             inverseJoinColumns =  @JoinColumn(name = "attendant_id")
     )
     public Set<User> getAttendants() {
-        return attendants;
+        //return Collections.unmodifiableSet(this.attendants);
+        return this.attendants;
     }
 
     public void setAttendants(Set<User> attendants) {
@@ -129,5 +128,10 @@ public class Travel {
         if(this.toDestination != null)
             return this.toDestination.getName();
         return null;
+    }
+
+    public void addAttendant(User attendant) {
+        this.attendants.add(attendant);
+        attendant.attendTravel(this);
     }
 }

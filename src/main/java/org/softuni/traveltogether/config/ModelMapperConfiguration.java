@@ -2,6 +2,7 @@ package org.softuni.traveltogether.config;
 
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
 import org.softuni.traveltogether.domain.entities.*;
 import org.softuni.traveltogether.domain.models.binding.TravelCreateBindingModel;
 import org.softuni.traveltogether.domain.models.service.TravelRequestServiceModel;
@@ -9,8 +10,10 @@ import org.softuni.traveltogether.domain.models.service.TravelServiceModel;
 import org.softuni.traveltogether.domain.models.service.UserServiceModel;
 import org.softuni.traveltogether.domain.models.view.*;
 import org.softuni.traveltogether.repositories.DestinationRepository;
+import org.softuni.traveltogether.services.CloudService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -42,7 +45,9 @@ public class ModelMapperConfiguration {
         this.travelCreateBindingInverseMapping();
 
         //USER
+        this.userServiceInverseMapping();
         this.homeViewMapping();
+        this.userProfileViewMapping();
     }
 
     private void addConverters() {
@@ -106,8 +111,29 @@ public class ModelMapperConfiguration {
     }
 
     //USER
+    private void userServiceInverseMapping() {
+        this.mapper.createTypeMap(UserServiceModel.class, User.class)
+                .addMappings(m -> {
+                    m.skip(User::setAttendedTravels);
+                    m.skip(User::setTravels);
+                });
+    }
+
     private void homeViewMapping() {
         this.mapper.createTypeMap(UserServiceModel.class, HomeViewModel.class)
                 .addMappings(m -> m.map(UserServiceModel::getTravels, HomeViewModel::setMyTravels));
+    }
+
+    private void userProfileViewMapping() {
+        Converter<UserServiceModel, HomeViewModel> homeCon = ctx -> this.mapper.map(ctx.getSource(), HomeViewModel.class);
+
+        this.mapper.createTypeMap(UserServiceModel.class, UserProfileViewModel.class)
+                .addMappings(new PropertyMap<UserServiceModel, UserProfileViewModel>() {
+                    @Override
+                    protected void configure() {
+                        using(homeCon).
+                            map(source, destination.getHomeViewModel());
+                    }
+                });
     }
 }

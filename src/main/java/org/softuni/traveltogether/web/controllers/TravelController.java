@@ -2,23 +2,27 @@ package org.softuni.traveltogether.web.controllers;
 
 import org.modelmapper.ModelMapper;
 import org.softuni.traveltogether.domain.models.binding.TravelCreateBindingModel;
-import org.softuni.traveltogether.domain.models.service.TravelServiceModel;
 import org.softuni.traveltogether.domain.models.view.TravelCreateViewModel;
 import org.softuni.traveltogether.domain.models.view.TravelDetailsViewModel;
 import org.softuni.traveltogether.services.DestinationService;
 import org.softuni.traveltogether.services.TravelService;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/travels")
 public class TravelController extends BaseController {
+    private static final String TRAVEL_ACTION_AUTHORIZATION_EXPRESSION_STRING =
+            "hasRole(T(org.softuni.traveltogether.specific.UserRole).ROLE_ADMIN.name()) " +
+                    "|| @userServiceImpl.findUserByUsername(principal.username).id.equals(@travelServiceImpl.getTravel(#id).publisher.id)";
+
     private final TravelService travelService;
     private final DestinationService destinationService;
     private final ModelMapper modelMapper;
@@ -48,7 +52,7 @@ public class TravelController extends BaseController {
     }
 
     @GetMapping("/{id}/edit")
-    @PreAuthorize("hasAnyRole('ROOT', 'ADMIN') || @userServiceImpl.findUserByUsername(principal.username).id.equals(@travelServiceImpl.getTravel(#id).publisher.id)")
+    @PreAuthorize(TRAVEL_ACTION_AUTHORIZATION_EXPRESSION_STRING)
     public ModelAndView edit(@PathVariable("id") String id) {
         return super.view("travels/form", new TravelCreateViewModel(
                 "travels/"+id+"/edit",
@@ -58,7 +62,7 @@ public class TravelController extends BaseController {
     }
 
     @PostMapping("/{id}/edit")
-    @PreAuthorize("hasAnyRole('ROOT', 'ADMIN') || @userServiceImpl.findUserByUsername(principal.username).id.equals(@travelServiceImpl.getTravel(#id).publisher.id)")
+    @PreAuthorize(TRAVEL_ACTION_AUTHORIZATION_EXPRESSION_STRING)
     public ModelAndView editPost(@Valid @ModelAttribute(name = "model") TravelCreateViewModel model, BindingResult bindingResult, @PathVariable("id") String id) {
         if(bindingResult.hasErrors()) {
             model.setAllDestinations(this.destinationService.getAllDestinationsNames());
@@ -68,7 +72,7 @@ public class TravelController extends BaseController {
     }
 
     @GetMapping("/{id}/delete")
-    @PreAuthorize("hasAnyRole('ROOT', 'ADMIN') || @userServiceImpl.findUserByUsername(principal.username).id.equals(@travelServiceImpl.getTravel(#id).publisher.id)")
+    @PreAuthorize(TRAVEL_ACTION_AUTHORIZATION_EXPRESSION_STRING)
     public ModelAndView delete(@PathVariable("id") String id) {
         return super.view("travels/form", new TravelCreateViewModel(
                 "travels/"+id+"/delete",
@@ -78,7 +82,7 @@ public class TravelController extends BaseController {
     }
 
     @PostMapping("/{id}/delete")
-    @PreAuthorize("hasAnyRole('ROOT', 'ADMIN') || @userServiceImpl.findUserByUsername(principal.username).id.equals(@travelServiceImpl.getTravel(#id).publisher.id)")
+    @PreAuthorize(TRAVEL_ACTION_AUTHORIZATION_EXPRESSION_STRING)
     public ModelAndView deletePost(@PathVariable("id") String id) {
         this.travelService.deleteTravel(id);
         return super.redirect("/travels");
@@ -95,5 +99,10 @@ public class TravelController extends BaseController {
     @GetMapping("")
     public ModelAndView all() {
         return super.view("travels/all",this.destinationService.getAllDestinationsNames());
+    }
+
+    @RequestMapping(path = "/{id}/addAttendant", method = RequestMethod.PATCH, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void addAttendant(@RequestBody Map<String, Object> updates, @PathVariable("id") String travelId) {
+        this.travelService.addAttendant(travelId, updates.get("attendantId").toString());
     }
 }

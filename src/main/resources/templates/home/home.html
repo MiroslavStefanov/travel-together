@@ -1,18 +1,99 @@
-<div id="content" class="jumbotron bg-white" xmlns:th="http://www.w3.org/1999/xhtml">
+<div id="content" class="jumbotron bg-white" xmlns:th="http://www.w3.org/1999/xhtml"
+     xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
     <h1 class="text-center text-blue2" th:text="|Welcome back, ${#authentication.principal.username}|"></h1>
 
-    <div class="container w-100">
-        <div class="row d-flex justify-content-around">
-            <th:block th:include="fragments/scrollable-box"
-                      th:with="boxTitle='My travels',altText='No published travels',collection=${model.myTravels},template='fragments/travel/travel-link-content'">
-            </th:block>
-            <th:block th:include="fragments/scrollable-box"
-                      th:with="boxTitle='Attended travels',altText='No attended travels',collection=${model.attendedTravels},template='fragments/travel/travel-link-content'">
-            </th:block>
-        </div>
+    <div class="container-fluid row mt-5">
+        <aside
+                sec:authorize="hasAuthority(T(org.softuni.traveltogether.specific.UserRole).ROLE_ADMIN.name())"
+               class="col-lg-4 col-md-6 col-sm-9 my-5 ml-auto bg-blue2 rounded py-2"
+        >
+            <h3 class="text-white text-center w-100">Admin panel</h3>
+            <div class="container bg-white rounded mb-3 pb-2">
+                <h4 class="text-blue2 text-center w-100">Find user</h4>
+                <div class="w-100 d-flex justify-content-center">
+                    <input type="text" placeholder="username" class="form-control w-50 mr-4" id="admin-panel-username-input"/>
+                    <button type="button" class="btn btn-blue" id="admin-panel-find">Find</button>
+                </div>
+                <div class="w-100 d-flex justify-content-center w-100 mt-3">
+                    <table class="table table-hover" id="admin-panel-user">
+                        <thead>
+                        <tr>
+                            <th scope="col">Username</th>
+                            <th scope="col">Role</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td id="admin-panel-username"></td>
+                            <td id="admin-panel-role"></td>
+                            <td><button id="admin-panel-action" class="btn btn-sm btn-blue"/></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div class="w-100" id="admin-panel-no-user">
+                        <h5 class="error-light text-center">No users found</h5>
+                    </div>
+                </div>
+            </div>
+        </aside>
     </div>
 
     <th:block th:include="fragments/travel/most-recent-travels"></th:block>
-
 </div>
+<script xmlns:th="http://www.thymeleaf.org" th:inline="javascript">
+    $(document).ready(() => {
+        $('#admin-panel-find').click(() => {
+            $('#admin-panel-user').hide();
+            $('#admin-panel-no-user').hide();
+            let username = $('#admin-panel-username-input').val();
+            $.ajax({
+                method: 'GET',
+                url: '/users/search/findUser?projection=userAdminProjection&username=' + username,
+                success: (data) => {
+                    let user = $('#admin-panel-user');
+                    user.find('#admin-panel-username').text(data.username);
+                    let role = data.role;
+                    user.find('#admin-panel-role').text(role);
+                    if(role !== 'INVALID' && role !== 'ROOT') {
+                        if(role === 'USER') {
+                            user.find('#admin-panel-action').text('Promote')
+                        } else if(role === 'ADMIN') {
+                            user.find('#admin-panel-action').text('Demote')
+                        }
+                        user.find('#admin-panel-action').click(function () {
+                            let action = $(this).text();
+                            $.ajax({
+                                method: 'PATCH',
+                                url: '/users/' + action,
+                                dataType: 'json',
+                                contentType: 'application/json',
+                                data: JSON.stringify({
+                                    username: data.username
+                                }),
+                                beforeSend: (request) => {
+                                    let _tc = $("meta[name='_csrf']").attr("content");
+                                    let _hc = $("meta[name='_csrf_header']").attr("content");
+                                    request.setRequestHeader(_hc, _tc);
+                                },
+                                success: (data) => {
+                                    console.log(data);
+                                },
+                                error: () => {
+                                    console.log('Chushki');
+                                }
+                            })
+                        });
+                        user.show();
+                    } else {
+                        $('#admin-panel-no-user').show();
+                    }
+                },
+                error(xhr, textStatus, errorThrown) {
+                    $('#admin-panel-no-user').show();
+                }
+            })
+        })
+    })
+</script>

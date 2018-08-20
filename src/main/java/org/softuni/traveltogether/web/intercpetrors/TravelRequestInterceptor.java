@@ -24,7 +24,7 @@ public class TravelRequestInterceptor implements HandlerInterceptor {
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) {
-        if(handler instanceof HandlerMethod && !modelAndView.getViewName().startsWith("redirect:")) {
+        if(handler instanceof HandlerMethod && modelAndView != null && !modelAndView.getViewName().startsWith("redirect:")) {
             modelAndView.addObject(REQUEST_COUNT_NAME, this.userRequestManager.getRequestCount(this.authenticationWrapper.getAuthentication().getName()));
         }
     }

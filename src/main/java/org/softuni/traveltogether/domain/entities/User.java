@@ -1,21 +1,21 @@
 package org.softuni.traveltogether.domain.entities;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.softuni.traveltogether.specific.UserRole;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.Collections;
+import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {
-    private static String DEFAULT_PROFIE_PICTURE_LINK = "/assets/profile-default.png";
 
     private String id;
     private String username;
@@ -25,6 +25,7 @@ public class User implements UserDetails {
     private String lastName;
     private String phoneNumber;
     private String profilePictureLink;
+    private LocalDateTime lastActive;
     private boolean isAccountNonExpired;
     private boolean isAccountNonLocked;
     private boolean isCredentialsNonExpired;
@@ -36,7 +37,8 @@ public class User implements UserDetails {
     public User() {
         this.authorities = new HashSet<>();
         this.attendedTravels = new HashSet<>();
-        this.profilePictureLink = DEFAULT_PROFIE_PICTURE_LINK;
+        isCredentialsNonExpired = true;
+        isAccountNonExpired = true;
     }
 
     @Id
@@ -119,9 +121,17 @@ public class User implements UserDetails {
         this.password = password;
     }
 
+    public LocalDateTime getLastActive() {
+        return lastActive;
+    }
+
+    public void setLastActive(LocalDateTime lastActive) {
+        this.lastActive = lastActive;
+    }
+
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return isAccountNonExpired;
     }
 
     public void setAccountNonExpired(boolean isAccountNonExpired) {
@@ -139,7 +149,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+        return isCredentialsNonExpired;
     }
 
     public void setCredentialsNonExpired(boolean isCredentialsNonExpired) {
@@ -155,7 +165,7 @@ public class User implements UserDetails {
         this.isEnabled = isEnabled;
     }
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "users_authorities",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -163,7 +173,7 @@ public class User implements UserDetails {
     )
     @Override
     public Set<Role> getAuthorities() {
-        return Collections.unmodifiableSet(this.authorities);
+        return authorities;
     }
 
     public void setAuthorities(Set<Role> authorities) {
@@ -179,7 +189,7 @@ public class User implements UserDetails {
         this.travels = travels;
     }
 
-    @ManyToMany(mappedBy = "attendants", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @ManyToMany(mappedBy = "attendants", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     public Set<Travel> getAttendedTravels() {
         return attendedTravels;
     }
@@ -191,5 +201,18 @@ public class User implements UserDetails {
     @Transient
     public String getFullName() {
         return this.firstName + " " + this.lastName;
+    }
+
+    @Transient
+    public UserRole getRole() {
+        return this.authorities
+                .stream()
+                .map(r -> UserRole.valueOf(r.getAuthority()))
+                .max(Comparator.comparingInt(Enum::ordinal))
+                .orElse(UserRole.ROLE_INVALID);
+    }
+
+    public void attendTravel(Travel travel) {
+        this.attendedTravels.add(travel);
     }
 }

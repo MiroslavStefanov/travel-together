@@ -16,6 +16,7 @@ import javax.transaction.Transactional;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 @Service
@@ -88,5 +89,14 @@ public class TravelServiceImpl implements TravelService {
     @Override
     public TravelServiceModel getTravel(String id) {
         return this.travelRepository.findById(id).map(t -> this.modelMapper.map(t, TravelServiceModel.class)).orElse(null);
+    }
+
+    @Override
+    public void addAttendant(String travelId, String attendantId) {
+        Travel travel = this.travelRepository.findById(travelId).orElse(null);
+        User user = this.userRepository.findById(attendantId).orElse(null);
+        travel.addAttendant(user);
+        /*user.getAttendedTravels().add(travel);*/
+        this.travelRepository.saveAndFlush(travel);
     }
 }

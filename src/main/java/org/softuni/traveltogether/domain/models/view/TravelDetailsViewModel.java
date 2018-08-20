@@ -1,9 +1,7 @@
 package org.softuni.traveltogether.domain.models.view;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class TravelDetailsViewModel {
@@ -77,8 +75,15 @@ public class TravelDetailsViewModel {
     }
 
     public Set<UserLinkViewModel> getAttendants() {
-        Set<UserLinkViewModel> attendantsWithPublisher = new HashSet<>(this.attendants);
-        attendantsWithPublisher.add(this.publisher);
+        Set<UserLinkViewModel> attendantsWithPublisher = new LinkedHashSet<>(){{
+            add(publisher);
+        }};
+        attendantsWithPublisher.addAll(
+                this.attendants
+                        .stream()
+                        .sorted(Comparator.comparing(UserLinkViewModel::getFullName))
+                        .collect(Collectors.toSet())
+        );
         return attendantsWithPublisher;
     }
 

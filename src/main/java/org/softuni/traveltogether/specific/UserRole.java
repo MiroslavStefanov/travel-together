@@ -4,5 +4,5 @@ public enum UserRole {
     ROLE_USER,
     ROLE_ADMIN,
     ROLE_ROOT,
-    INVALID_ROLE
+    ROLE_INVALID
 }

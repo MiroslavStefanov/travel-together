@@ -12,6 +12,7 @@ public class GlobalExceptionController {
     @ExceptionHandler(Exception.class)
     @ResponseBody
     public String getException(Exception e){
+        e.printStackTrace();
         return String.format(
                 "<h1>%s</h1>" +
                 "<h3>%s</h3>" +

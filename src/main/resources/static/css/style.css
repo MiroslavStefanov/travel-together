@@ -81,6 +81,12 @@
     border-radius: 5px;
 }
 
+.border-blue1 {
+    box-sizing: border-box;
+    border: #0091cf solid;
+    border-radius: 5px;
+}
+
 .bg-grey {
     background-color: #FAFAFA;
 }
@@ -99,6 +105,12 @@ span.text-blue1{
 
 #map {
     height: 100%;
+}
+
+.modal-body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
 }
 
 .travel-body{
@@ -178,13 +190,38 @@ img{
     color: #ffffff;
 }
 
+input.no-border, input.no-border:hover, input.no-border:focus, input.no-border:active {
+    background: transparent;
+    border: 0 none transparent;
+    outline: none;
+    outline-offset: 0;
+    box-shadow: none;
+}
+
 .mini-row {
     width: 100%;
-    height: 25%;
+    min-height: 25%;
     box-sizing: border-box;
     border-bottom: 2px solid #E5E5E5;
 }
 
 .mini-row:hover{
     background-color: #F3F3F3;
+}
+
+.error-light{
+    font-weight: lighter;
+    color: #fd4445;
+}
+
+#admin-panel-user, .initial-hidden{
+    display: none;
+}
+
+#admin-panel-no-user{
+    display: none;
+}
+
+.clickable{
+    cursor: pointer;
 }

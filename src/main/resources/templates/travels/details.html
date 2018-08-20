@@ -8,15 +8,29 @@
         <div class="container mt-3 mb-5" id="information">
             <h2 class="text-center text-blue2">Information</h2>
             <div class="row">
-                <div class="col-md-6 col-sm-12">
-                    <h3 class="text-blue2">From: <span class="text-blue1" th:text="*{fromDestination.name}"></span></h3>
-                    <h3 class="text-blue2">To: <span class="text-blue1" th:text="*{toDestination.name}"></span></h3>
+                <div class="col-lg-6 col-md-8 col-sm-12">
+                    <h3 class="text-blue2 d-flex">From: <span class="text-blue1 pl-2" th:text="*{fromDestination.name}"></span>
+                        <i
+                                class="fa fa-map-marked-alt text-red ml-auto clickable"
+                                data-toggle="modal"
+                                data-target="#modal-map"
+                                data-th-attr="data-lat=*{fromDestination.latitude}, data-lng=*{fromDestination.longitude}, data-title=*{fromDestination.name}">
+                        </i>
+                    </h3>
+                    <h3 class="text-blue2 d-flex">To: <span class="text-blue1 pl-2" th:text="*{toDestination.name}"></span>
+                        <i
+                                class="fa fa-map-marked-alt text-red ml-auto clickable"
+                                data-toggle="modal"
+                                data-target="#modal-map"
+                                data-th-attr="data-lat=*{toDestination.latitude}, data-lng=*{toDestination.longitude}, data-title=*{toDestination.name}">
+                        </i>
+                    </h3>
                     <h3 class="text-blue2">Departure at: <span class="text-blue1" th:text="*{#temporals.format(departureTime, 'dd-MMM-yyyy hh:mm a')}"></span></h3>
-                    <h3 class="text-blue2">Creator: <a class="text-blue1" th:href="@{/users/{id}(id=*{publisher.id})}" th:text="*{publisher.fullName}"></a></h3>
+                    <h3 class="text-blue2">Creator: <a class="text-blue1" th:href="@{/profile/{id}(id=*{publisher.username})}" th:text="*{publisher.fullName}"></a></h3>
                     <small class="text-muted" th:text="|Published at *{#temporals.format(publishedAt)}|"></small>
                 </div>
-                <div class="col-md-6 col-sm-12 d-flex" th:if="${userId == model.publisher.id || #authorization.expr('hasAnyRole(''ADMIN'', ''ROOT'')')}">
-                    <div class="container w-50 mt-auto pt-1" id="actions">
+                <div class="col-lg-3 col-md-4 col-sm-9 d-flex mx-auto mt-4" th:if="${userId == model.publisher.id || #authorization.expr('hasAnyRole(''ADMIN'', ''ROOT'')')}">
+                    <div class="container w-100 mt-auto pt-1" id="actions">
                         <h2 class="text-center text-blue2">Actions</h2>
                         <div class="d-flex justify-content-center">
                             <a th:href="@{/travels/{id}/edit(id=*{id})}" class="d-inline-block btn btn-blue m-3">Edit</a>
@@ -30,7 +44,7 @@
         <div class="container scrollable-horizontal my-5" id="attendants">
             <h3>Attendants</h3>
             <div th:each="attendant : *{attendants}" class="d-inline-block mx-1">
-                <a th:href="@{/profile/{id}(id=${attendant.id})}" class="d-block">
+                <a th:href="@{/profile/{username}(username=${attendant.username})}" class="d-block">
                     <div class="d-flex justify-content-center">
                         <img th:src="${attendant.profilePictureLink}" width="64", height="64" class="rounded-circle"/>
                     </div>
@@ -57,53 +71,57 @@
             </div>
         </th:block>
     </div>
+
+    <div class="modal fade" id="modal-map" tabindex="-1" role="dialog" aria-labelledby="map-title" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-blue2" id="map-title"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="map" style="height: 400px"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+<script xmlns:th="http://www.w3.org/1999/xhtml" th:src="@{/scripts/travel-request/request-service.js}"></script>
+<script xmlns:th="http://www.w3.org/1999/xhtml" th:src="@{/scripts/map/map-service.js}"></script>
 <script xmlns:th="http://www.thymeleaf.org" th:inline="javascript">
     $(document).ready(() => {
         $('#send-request-btn').click(() => {
-            let request = {
-                travel: '/travel_api/' + [[${model.id}]],
-                user: '/users/' + [[${@userServiceImpl.findUserByUsername(#authentication.name).id}]]
+            let travelId = [[${model.id}]];
+            let userId = [[${@userServiceImpl.findUserByUsername(#authentication.name).id}]];
+            let callback = () => {
+                let requestBtn = $('#send-request-btn');
+                requestBtn.text('Request sent');
+                requestBtn.prop('disabled', true);
             };
-            $.ajax({
-                type: 'POST',
-                url: '/travelRequests',
-                dataType: 'json',
-                contentType: 'application/json',
-                data: JSON.stringify(request),
-                beforeSend: (request) => {
-                    let _tc = $("meta[name='_csrf']").attr("content");
-                    let _hc = $("meta[name='_csrf_header']").attr("content");
-                    request.setRequestHeader(_hc, _tc);
-                },
-                success: () => {
-                    let requestBtn = $('#send-request-btn');
-                    requestBtn.text('Request sent');
-                    requestBtn.prop('disabled', true);
-                }
-            })
+            createRequest(travelId, userId, callback);
         });
 
         $('#cancel-request-btn').click(() => {
-            /*let loggedInUserId = [[${@userServiceImpl.findUserByUsername(#authentication.name).id}]];
-            console.log(loggedInUserId);*/
             let requestId = [[${model.getRequestByUserId(@userServiceImpl.findUserByUsername(#authentication.name).id)}]];
-            console.log(requestId);
-            $.ajax({
-                type: 'DELETE',
-                url: '/travelRequests/' + requestId,
-                dataType: 'json',
-                contentType: 'application/json',
-                beforeSend: (request) => {
-                    let _tc = $("meta[name='_csrf']").attr("content");
-                    let _hc = $("meta[name='_csrf_header']").attr("content");
-                    request.setRequestHeader(_hc, _tc);
-                },
-                success: () => {
-                    let requestBtn = $('#cancel-request-btn');
-                    requestBtn.hide();
-                }
-            })
+            let callback = () => {
+                let requestBtn = $('#cancel-request-btn');
+                requestBtn.hide();
+            };
+            deleteRequest(requestId, callback);
         });
+    });
+
+    $('#modal-map').on('show.bs.modal', (event) => {
+        let button = $(event.relatedTarget);
+        let lat = button.data('lat');
+        let lng = button.data('lng');
+        let center = {lat: lat, lng: lng};
+        let title = button.data('title');
+        let modal = $(this);
+        document.getElementById('map-title').innerText = title;
+
+        placeMarker(center, initMap('map', center, 9))
     })
 </script>

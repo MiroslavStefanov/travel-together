@@ -8,8 +8,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class UserServiceModel {
+    private static String DEFAULT_PROFILE_PICTURE_LINK = "/assets/profile-default.png";
+
     private String id;
     private String username;
+    private String password;
     private String email;
     private String firstName;
     private String lastName;
@@ -21,6 +24,8 @@ public class UserServiceModel {
     public UserServiceModel() {
         this.travels = new HashSet<>();
         this.attendedTravels = new HashSet<>();
+        this.profilePictureLink = DEFAULT_PROFILE_PICTURE_LINK;
+
     }
 
     public String getId() {
@@ -37,6 +42,14 @@ public class UserServiceModel {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getEmail() {

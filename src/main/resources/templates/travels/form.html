@@ -31,7 +31,12 @@
                 <input type="hidden" th:field="*{targetUrl}" th:value="*{targetUrl}">
             </div>
 
-            <div class="form-group">
+            <div th:if="${#strings.equals(#strings.toLowerCase(model.action), 'delete') == false}"
+                class="mt-1">
+                <a class="text-blue1" th:href="@{/destinations/create}">Can&rsquo;t find your destination? Click here.</a>
+            </div>
+
+            <div class="form-group mt-4">
                 <div class="d-flex justify-content-center">
                     <input type="submit" class="btn btn-blue" th:value="${text}"/>
                 </div>

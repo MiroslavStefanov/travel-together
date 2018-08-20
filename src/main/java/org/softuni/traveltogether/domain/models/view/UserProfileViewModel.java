@@ -1,5 +1,8 @@
 package org.softuni.traveltogether.domain.models.view;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class UserProfileViewModel {
     private String username;
     private String email;
@@ -7,8 +10,11 @@ public class UserProfileViewModel {
     private String lastName;
     private String phoneNumber;
     private String profilePictureLink;
+    private Set<TravelRequestViewModel> requests;
+    private HomeViewModel homeViewModel;
 
     public UserProfileViewModel() {
+        requests = new HashSet<>();
     }
 
     public String getUsername() {
@@ -61,5 +67,21 @@ public class UserProfileViewModel {
 
     public String getFullName() {
         return this.firstName + " " + this.lastName;
+    }
+
+    public Set<TravelRequestViewModel> getRequests() {
+        return requests;
+    }
+
+    public void setRequests(Set<TravelRequestViewModel> requests) {
+        this.requests = requests;
+    }
+
+    public HomeViewModel getHomeViewModel() {
+        return homeViewModel;
+    }
+
+    public void setHomeViewModel(HomeViewModel homeViewModel) {
+        this.homeViewModel = homeViewModel;
     }
 }

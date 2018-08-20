@@ -3,6 +3,7 @@ package org.softuni.traveltogether.domain.models.view;
 public class TravelRequestViewModel {
     private String id;
     private UserLinkViewModel user;
+    private TravelLinkViewModel travel;
 
     public TravelRequestViewModel() {
     }
@@ -21,5 +22,13 @@ public class TravelRequestViewModel {
 
     public void setUser(UserLinkViewModel user) {
         this.user = user;
+    }
+
+    public TravelLinkViewModel getTravel() {
+        return travel;
+    }
+
+    public void setTravel(TravelLinkViewModel travel) {
+        this.travel = travel;
     }
 }

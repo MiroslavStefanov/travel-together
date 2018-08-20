@@ -54,6 +54,7 @@ public class DatabaseSeeder {
     private void seedRoles() {
         if(this.roleRepository.count() == 0) {
             List<Role> roles = Arrays.stream(UserRole.values())
+                    .filter(r -> !r.equals(UserRole.ROLE_INVALID))
                     .map(role->new Role(role.toString()))
                     .collect(Collectors.toList());
 
@@ -70,6 +71,7 @@ public class DatabaseSeeder {
             user.setLastName("Rootov");
             Set<Role> rootRoleSet = new HashSet<>(){{
                 add(roleRepository.findFirstByAuthority(UserRole.ROLE_ADMIN.toString()));
+                add(roleRepository.findFirstByAuthority(UserRole.ROLE_ROOT.toString()));
             }};
             user.setAuthorities(rootRoleSet);
             this.userRepository.saveAndFlush(user);

@@ -1,9 +1,13 @@
 package org.softuni.traveltogether.web.controllers;
 
 import org.modelmapper.ModelMapper;
+import org.softuni.traveltogether.domain.models.binding.UserEditBindingModel;
 import org.softuni.traveltogether.domain.models.binding.UserRegisterBindingModel;
+import org.softuni.traveltogether.domain.models.service.UserServiceModel;
 import org.softuni.traveltogether.domain.models.view.UserProfileViewModel;
+import org.softuni.traveltogether.services.CloudService;
 import org.softuni.traveltogether.services.UserService;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -11,6 +15,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
+import java.io.IOException;
+import java.security.Principal;
+import java.util.Map;
 
 @Controller
 public class UserController extends BaseController {
@@ -35,7 +42,7 @@ public class UserController extends BaseController {
         if(bindingResult.hasErrors()) {
             return super.view("user/register", userRegisterBindingModel, "bindingModel");
         } else {
-            this.userService.saveUser(userRegisterBindingModel);
+            this.userService.saveUser(this.modelMapper.map(userRegisterBindingModel, UserServiceModel.class));
             return super.redirect("/login");
         }
     }
@@ -50,9 +57,28 @@ public class UserController extends BaseController {
         return super.view("user/profile", this.modelMapper.map(this.userService.findUserByUsername(username), UserProfileViewModel.class), "user");
     }
 
-    @GetMapping("/profile/${username}/edit")
-    @PreAuthorize("#username.equals(principal.username)")
-    public ModelAndView editProfile(@PathVariable("username") String username) {
-        return super.view("user/edit");
+    @GetMapping("/profile/edit")
+    public ModelAndView editProfile(Principal principal) {
+        UserServiceModel user = this.userService.findUserByUsername(principal.getName());
+        UserEditBindingModel model = this.modelMapper.map(user, UserEditBindingModel.class);
+        return super.view("user/edit", model);
+    }
+
+    @PostMapping("/profile/edit")
+    public ModelAndView editProfilePost(@ModelAttribute("model") UserEditBindingModel userEditBindingModel, BindingResult bindingResult, Principal principal) throws IllegalAccessException {
+        if(bindingResult.hasErrors()) {
+            return super.view("user/register", userEditBindingModel);
+        } else {
+            UserServiceModel userServiceModel = this.userService.findUserByUsername(principal.getName());
+            this.modelMapper.map(userEditBindingModel, userServiceModel);
+            this.userService.updateProfilePicture(userServiceModel, userEditBindingModel.getProfilePictureFile());
+            this.userService.saveUser(userServiceModel);
+            return super.redirect("/profile/"+principal.getName());
+        }
+    }
+
+    @RequestMapping(path = "/users/{action}", method = RequestMethod.PATCH, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody String changeRole(@RequestBody Map<String, Object> updates, @PathVariable("action") String action) {
+        return this.userService.changeUserRole(action, updates.get("username").toString());
     }
 }

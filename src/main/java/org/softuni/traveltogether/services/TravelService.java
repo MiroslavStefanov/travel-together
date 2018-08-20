@@ -14,4 +14,6 @@ public interface TravelService {
     void deleteTravel(String travelId);
 
     TravelServiceModel getTravel(String id);
+
+    void addAttendant(String travelId, String attendantId);
 }

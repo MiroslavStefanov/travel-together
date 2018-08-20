@@ -2,6 +2,7 @@ package org.softuni.traveltogether.specific;
 
 import org.softuni.traveltogether.domain.entities.User;
 import org.softuni.traveltogether.domain.models.service.TravelRequestServiceModel;
+import org.softuni.traveltogether.repositories.UserRepository;
 import org.softuni.traveltogether.services.UserService;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
@@ -10,12 +11,12 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.session.SessionDestroyedEvent;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Component
 public class SessionListener {
     private final UserRequestManager userRequestManager;
-
     private final UserService userService;
 
     public SessionListener(UserRequestManager userRequestManager, UserService userService) {
@@ -34,8 +35,7 @@ public class SessionListener {
     @EventListener
     public void onSessionDestroyed(SessionDestroyedEvent event) {
         for (SecurityContext securityContext : event.getSecurityContexts()) {
-            User user = (User)securityContext.getAuthentication().getPrincipal();
-            System.out.println(user.getUsername());
+            this.userService.updateActivity(securityContext.getAuthentication().getName(), LocalDateTime.now());
         }
     }
 }

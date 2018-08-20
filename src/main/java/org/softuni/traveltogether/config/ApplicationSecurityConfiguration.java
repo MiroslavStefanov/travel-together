@@ -1,5 +1,6 @@
 package org.softuni.traveltogether.config;
 
+import org.softuni.traveltogether.specific.UserRole;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -45,7 +46,7 @@ public class ApplicationSecurityConfiguration extends WebSecurityConfigurerAdapt
                 .authorizeRequests()
                     .antMatchers(WebConstants.ANONYMOUS_URLS).anonymous()
                     .antMatchers("/css/**", "/scripts/**", "/assets/**", "/favicon.ico", "/travel_api/search/findTop5ByOrderByPublishedAtDesc").permitAll()
-                    .antMatchers("/admin").hasAnyRole("ADMIN", "ROOT")
+                    .antMatchers("/admin").hasAnyRole(UserRole.ROLE_ADMIN.name())
                     .anyRequest().authenticated()
                 .and()
                 .formLogin()
@@ -63,6 +64,7 @@ public class ApplicationSecurityConfiguration extends WebSecurityConfigurerAdapt
                                 return;
                             }
                         }
+                        e.printStackTrace();
                         httpServletResponse.sendRedirect("/unauthorized");
                     }))
 
