@@ -92,22 +92,22 @@ public class TravelDetailsViewModel {
     }
 
     public Set<TravelRequestViewModel> getRequests() {
-        return requests;
+        return Collections.unmodifiableSet(requests);
     }
 
     public void setRequests(Set<TravelRequestViewModel> requests) {
         this.requests = requests;
     }
 
-    public Set<String> getAllRequestingUserIds() {
-        return this.requests.stream().map(r -> r.getUser().getId()).collect(Collectors.toSet());
+    public Set<String> getAllRequestingUsernames() {
+        return this.requests.stream().map(r -> r.getUser().getUsername()).collect(Collectors.toUnmodifiableSet());
     }
 
-    public Set<String> getAllParticipatedUserIds() {
-        return this.getAttendants().stream().map(UserLinkViewModel::getId).collect(Collectors.toSet());
+    public Set<String> getAllParticipatedUsernames() {
+        return this.getAttendants().stream().map(UserLinkViewModel::getUsername).collect(Collectors.toUnmodifiableSet());
     }
 
-    public String getRequestByUserId(String userId) {
-        return this.requests.stream().filter(r -> r.getUser().getId().equals(userId)).findFirst().map(TravelRequestViewModel::getId).orElse(null);
+    public String getRequestByUsername(String username) {
+        return this.requests.stream().filter(r -> r.getUser().getUsername().equals(username)).findFirst().map(TravelRequestViewModel::getId).orElse(null);
     }
 }

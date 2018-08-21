@@ -17,5 +17,7 @@
 
 </div>
 <script xmlns:th="http://www.w3.org/1999/xhtml" th:src="@{/scripts/map/get-photos.js}"></script>
-<script xmlns:th="http://www.w3.org/1999/xhtml" th:src="@{/scripts/travel/get-all.js}"></script>
+<script xmlns:th="http://www.w3.org/1999/xhtml" th:inline="javascript">
+    pageService.setPageHandler(travelPageHandler);
+</script>
 

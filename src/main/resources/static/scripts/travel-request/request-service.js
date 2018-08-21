@@ -19,18 +19,20 @@ function createRequest(travelId, userId, succesCallback) {
 }
 
 function deleteRequest(requestId, successCallback) {
-    $.ajax({
-        type: 'DELETE',
-        url: '/travelRequests/' + requestId,
-        dataType: 'json',
-        contentType: 'application/json',
-        beforeSend: (request) => {
-            let _tc = $("meta[name='_csrf']").attr("content");
-            let _hc = $("meta[name='_csrf_header']").attr("content");
-            request.setRequestHeader(_hc, _tc);
-        },
-        success: successCallback
-    })
+    if(requestId !== null) {
+        $.ajax({
+            type: 'DELETE',
+            url: '/travelRequests/' + requestId,
+            dataType: 'json',
+            contentType: 'application/json',
+            beforeSend: (request) => {
+                let _tc = $("meta[name='_csrf']").attr("content");
+                let _hc = $("meta[name='_csrf_header']").attr("content");
+                request.setRequestHeader(_hc, _tc);
+            },
+            success: successCallback
+        })
+    }
 }
 
 function acceptRequest(requestId, travelId, userId, successCallBack) {
@@ -38,7 +40,7 @@ function acceptRequest(requestId, travelId, userId, successCallBack) {
 
     $.ajax({
         type: 'PATCH',
-        url: '/travels/' + travelId + '/addAttendant',
+        url: '/travels/' + travelId + '/add',
         dataType: 'json',
         contentType: 'application/json',
         data: JSON.stringify({
@@ -50,5 +52,23 @@ function acceptRequest(requestId, travelId, userId, successCallBack) {
             request.setRequestHeader(_hc, _tc);
         },
         success: successCallBack
+    });
+}
+
+function removeAttendant(travelId, userId, successCallback) {
+    $.ajax({
+        type: 'PATCH',
+        url: '/travels/' + travelId + '/remove',
+        dataType: 'json',
+        contentType: 'application/json',
+        data: JSON.stringify({
+            attendantId: userId
+        }),
+        beforeSend: request => {
+            let _tc = $("meta[name='_csrf']").attr("content");
+            let _hc = $("meta[name='_csrf_header']").attr("content");
+            request.setRequestHeader(_hc, _tc);
+        },
+        success: successCallback
     });
 }

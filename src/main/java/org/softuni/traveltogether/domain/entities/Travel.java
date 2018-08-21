@@ -23,6 +23,7 @@ public class Travel {
 
     public Travel() {
         this.attendants = new HashSet<>();
+        this.requests = new HashSet<>();
     }
 
     @Id
@@ -50,7 +51,7 @@ public class Travel {
     }
 
     @NotNull
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     public LocalDateTime getPublishedAt() {
         return publishedAt;
     }
@@ -106,7 +107,6 @@ public class Travel {
             inverseJoinColumns =  @JoinColumn(name = "attendant_id")
     )
     public Set<User> getAttendants() {
-        //return Collections.unmodifiableSet(this.attendants);
         return this.attendants;
     }
 
@@ -133,5 +133,9 @@ public class Travel {
     public void addAttendant(User attendant) {
         this.attendants.add(attendant);
         attendant.attendTravel(this);
+    }
+
+    public void removeAttendant(String attendantId) {
+        this.attendants.removeIf(a -> a.getId().equals(attendantId));
     }
 }

@@ -1,5 +1,4 @@
-<div id="content" xmlns:th="http://www.thymeleaf.org"
-     th:with="userId = ${@userServiceImpl.findUserByUsername(#authentication.name).id}">
+<div id="content" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <div class="jumbotron-fluid p-3">
         <h1 class="text-center">Travel Details</h1>
     </div>
@@ -26,10 +25,13 @@
                         </i>
                     </h3>
                     <h3 class="text-blue2">Departure at: <span class="text-blue1" th:text="*{#temporals.format(departureTime, 'dd-MMM-yyyy hh:mm a')}"></span></h3>
-                    <h3 class="text-blue2">Creator: <a class="text-blue1" th:href="@{/profile/{id}(id=*{publisher.username})}" th:text="*{publisher.fullName}"></a></h3>
+                    <h3 class="text-blue2">Creator:
+                        <a class="text-blue1" th:href="@{/profile/{username}(username=*{publisher.username})}" th:text="*{publisher.fullName}"></a>
+                    </h3>
                     <small class="text-muted" th:text="|Published at *{#temporals.format(publishedAt)}|"></small>
                 </div>
-                <div class="col-lg-3 col-md-4 col-sm-9 d-flex mx-auto mt-4" th:if="${userId == model.publisher.id || #authorization.expr('hasAnyRole(''ADMIN'', ''ROOT'')')}">
+                <div class="col-lg-3 col-md-4 col-sm-9 d-flex mx-auto mt-4"
+                     th:if="${#authentication.name == model.publisher.username || #authorization.expr('hasAnyRole(''ADMIN'', ''ROOT'')')}">
                     <div class="container w-100 mt-auto pt-1" id="actions">
                         <h2 class="text-center text-blue2">Actions</h2>
                         <div class="d-flex justify-content-center">
@@ -44,6 +46,14 @@
         <div class="container scrollable-horizontal my-5" id="attendants">
             <h3>Attendants</h3>
             <div th:each="attendant : *{attendants}" class="d-inline-block mx-1">
+                <button
+                        th:if="${#strings.equals(attendant.username, model.publisher.username) == false && (#strings.equals(model.publisher.username, #authentication.name) || #authorization.expr('hasRole(''ADMIN'')') || #strings.equals(attendant.username, #authentication.name))}"
+                        type="button" class="close"
+                        aria-label="Remove"
+                        data-th-attr="data-attendant-id=${attendant.id}"
+                        onclick="remove(this)">
+                    <span aria-hidden="true">&times;</span>
+                </button>
                 <a th:href="@{/profile/{username}(username=${attendant.username})}" class="d-block">
                     <div class="d-flex justify-content-center">
                         <img th:src="${attendant.profilePictureLink}" width="64", height="64" class="rounded-circle"/>
@@ -60,7 +70,9 @@
             <p class="text-justify text-blue2" th:text="*{description}"></p>
         </div>
 
-        <th:block th:with="hasRequested = ${#sets.contains(model.allRequestingUserIds, userId)}, hasAttended = ${#sets.contains(model.allParticipatedUserIds, userId)}">
+        <th:block
+                th:with="hasRequested = ${#sets.contains(model.allRequestingUsernames, #authentication.name)}, hasAttended = ${#sets.contains(model.allParticipatedUsernames, #authentication.name)}"
+        >
             <div class="p-4" th:if="${!hasAttended}">
                 <div class="container d-flex justify-content-end" th:if="${!hasRequested}">
                     <button type="submit" id="send-request-btn" class="btn btn-blue">Participate</button>
@@ -91,10 +103,18 @@
 <script xmlns:th="http://www.w3.org/1999/xhtml" th:src="@{/scripts/travel-request/request-service.js}"></script>
 <script xmlns:th="http://www.w3.org/1999/xhtml" th:src="@{/scripts/map/map-service.js}"></script>
 <script xmlns:th="http://www.thymeleaf.org" th:inline="javascript">
+    function remove(button) {
+        let travelId = [[${model.id}]];
+        let userId = $(button).data('attendant-id');
+        removeAttendant(travelId, userId, () => {
+            $(button).parent().remove();
+        })
+    }
+
     $(document).ready(() => {
         $('#send-request-btn').click(() => {
             let travelId = [[${model.id}]];
-            let userId = [[${@userServiceImpl.findUserByUsername(#authentication.name).id}]];
+            let userId = [[${currentUserId}]];
             let callback = () => {
                 let requestBtn = $('#send-request-btn');
                 requestBtn.text('Request sent');
@@ -104,12 +124,14 @@
         });
 
         $('#cancel-request-btn').click(() => {
-            let requestId = [[${model.getRequestByUserId(@userServiceImpl.findUserByUsername(#authentication.name).id)}]];
+            let requestId = [[${model.getRequestByUsername(#authentication.name)}]];
             let callback = () => {
                 let requestBtn = $('#cancel-request-btn');
                 requestBtn.hide();
             };
-            deleteRequest(requestId, callback);
+            if(requestId !== null) {
+                deleteRequest(requestId, callback);
+            }
         });
     });
 

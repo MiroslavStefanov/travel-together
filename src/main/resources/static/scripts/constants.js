@@ -1,5 +1,5 @@
 const pageSize = 10;
-const maxLoadSeconds = 40;
+const maxLoadSeconds = 20;
 const backupPhotos = [
     {
         getUrl: (size) => {

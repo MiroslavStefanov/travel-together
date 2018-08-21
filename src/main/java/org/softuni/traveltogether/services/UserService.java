@@ -17,9 +17,11 @@ public interface UserService extends UserDetailsService {
 
     Set<TravelRequestServiceModel> getAllRequests(String username);
 
-    void updateProfilePicture(UserServiceModel userServiceModel, MultipartFile pictureFile) throws IllegalAccessException;
+    void updateProfilePicture(UserServiceModel userServiceModel, MultipartFile pictureFile) throws IllegalArgumentException;
 
     String changeUserRole(String action, String username);
 
     void updateActivity(String username, LocalDateTime lastActive);
+
+    void kickUser(String username);
 }

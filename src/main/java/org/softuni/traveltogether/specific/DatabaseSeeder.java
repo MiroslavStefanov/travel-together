@@ -48,7 +48,7 @@ public class DatabaseSeeder {
         this.seedRoles();
         this.seedRootUser();
         this.seedDestinations();
-        this.seedTravels();
+        //this.seedTravels();
     }
 
     private void seedRoles() {

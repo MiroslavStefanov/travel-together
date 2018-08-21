@@ -8,11 +8,15 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.multipart.MultipartResolver;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import java.security.Principal;
 
@@ -20,6 +24,7 @@ import java.security.Principal;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class ApplicationSecurityConfiguration extends WebSecurityConfigurerAdapter {
+    private static final int MAX_SESSIONS_PER_USER = 100;
 
     private CsrfTokenRepository csrfTokenRepository() {
         HttpSessionCsrfTokenRepository repository = new HttpSessionCsrfTokenRepository();
@@ -30,6 +35,11 @@ public class ApplicationSecurityConfiguration extends WebSecurityConfigurerAdapt
     @Bean
     public HttpSessionEventPublisher httpSessionEventPublisher() {
         return new HttpSessionEventPublisher();
+    }
+
+    @Bean
+    public SessionRegistry sessionRegistry() {
+        return new SessionRegistryImpl();
     }
 
     @Bean
@@ -73,6 +83,12 @@ public class ApplicationSecurityConfiguration extends WebSecurityConfigurerAdapt
                     .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                     .logoutSuccessUrl("/")
                     .invalidateHttpSession(true)
+                .and()
+                .sessionManagement()
+                    .maximumSessions(MAX_SESSIONS_PER_USER)
+                    .maxSessionsPreventsLogin(false)
+                    .expiredUrl("/login")
+                    .sessionRegistry(sessionRegistry())
         ;
     }
 }

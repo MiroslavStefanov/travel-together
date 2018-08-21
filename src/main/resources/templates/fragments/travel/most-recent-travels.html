@@ -14,4 +14,17 @@
     </div>
 </section>
 <script xmlns:th="http://www.w3.org/1999/xhtml" th:src="@{/scripts/map/get-photos.js}"></script>
-<script xmlns:th="http://www.w3.org/1999/xhtml" th:src="@{/scripts/travel/get-most-recent.js}"></script>
+<script xmlns:th="http://www.w3.org/1999/xhtml" th:inline="javascript">
+    $(document).ready(() => {
+        $.ajax({
+            type: 'GET',
+            url: '/travel_api/search/findTop5ByOrderByPublishedAtDesc',
+            success: (data) => {
+                let section = $('#most-recent');
+                let row = fillRow(data);
+                section.empty();
+                section.append(row);
+            }
+        })
+    });
+</script>

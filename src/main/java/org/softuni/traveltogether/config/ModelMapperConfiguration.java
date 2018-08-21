@@ -5,15 +5,14 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.softuni.traveltogether.domain.entities.*;
 import org.softuni.traveltogether.domain.models.binding.TravelCreateBindingModel;
+import org.softuni.traveltogether.domain.models.service.DestinationServiceModel;
 import org.softuni.traveltogether.domain.models.service.TravelRequestServiceModel;
 import org.softuni.traveltogether.domain.models.service.TravelServiceModel;
 import org.softuni.traveltogether.domain.models.service.UserServiceModel;
 import org.softuni.traveltogether.domain.models.view.*;
 import org.softuni.traveltogether.repositories.DestinationRepository;
-import org.softuni.traveltogether.services.CloudService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -21,6 +20,7 @@ import java.util.stream.Collectors;
 @Configuration
 public class ModelMapperConfiguration {
     private final ModelMapper mapper;
+
     private final DestinationRepository destinationRepository;
 
     public ModelMapperConfiguration(DestinationRepository destinationRepository) {
@@ -41,6 +41,7 @@ public class ModelMapperConfiguration {
         //mapping configuration
 
         //TRAVEL
+        travelServiceInverseMapping();
         this.travelCreateBindingMapping();
         this.travelCreateBindingInverseMapping();
 
@@ -92,13 +93,30 @@ public class ModelMapperConfiguration {
 
 
     //TRAVEL
-    private void travelCreateBindingMapping() {
+    private void travelServiceInverseMapping() {
         Converter<String, Destination> destinationConverter = ctx -> this.destinationRepository.findFirstByName(ctx.getSource());
 
-        this.mapper.createTypeMap(TravelCreateBindingModel.class, Travel.class)
+        this.mapper.createTypeMap(TravelServiceModel.class, Travel.class)
                 .addMappings(m -> {
-                    m.using(destinationConverter).map(TravelCreateBindingModel::getFrom, Travel::setFromDestination);
-                    m.using(destinationConverter).map(TravelCreateBindingModel::getTo, Travel::setToDestination);
+                    m.using(destinationConverter).map(tsm -> tsm.getFromDestination().getName(), Travel::setFromDestination);
+                    m.using(destinationConverter).map(tsm -> tsm.getToDestination().getName(), Travel::setToDestination);
+                    m.skip(Travel::setPublisher);
+                    m.skip(Travel::setAttendants);
+                    m.skip(Travel::setRequests);
+                });
+    }
+
+    private void travelCreateBindingMapping() {
+        Converter<String, DestinationServiceModel> destinationConverter = ctx -> {
+            DestinationServiceModel model = new DestinationServiceModel();
+            model.setName(ctx.getSource());
+            return model;
+        };
+
+        this.mapper.createTypeMap(TravelCreateBindingModel.class, TravelServiceModel.class)
+                .addMappings(m -> {
+                    m.using(destinationConverter).map(TravelCreateBindingModel::getFrom, TravelServiceModel::setFromDestination);
+                    m.using(destinationConverter).map(TravelCreateBindingModel::getTo, TravelServiceModel::setToDestination);
                 });
     }
 

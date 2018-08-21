@@ -5,7 +5,7 @@ import org.springframework.web.servlet.ModelAndView;
 public abstract class BaseController {
     private static final String BASE_PAGE_LAYOUT_VIEW_NAME = "base-layout";
     private static final String BASE_PAGE_VIEW_NAME = "view";
-    private static final String DEFAULT_MODEL_NAME = "model";
+    protected static final String DEFAULT_MODEL_NAME = "model";
 
     protected ModelAndView view(String viewName) {
         return this.view(viewName, null);

@@ -1,5 +1,6 @@
 package org.softuni.traveltogether.domain.models.view;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -70,7 +71,7 @@ public class UserProfileViewModel {
     }
 
     public Set<TravelRequestViewModel> getRequests() {
-        return requests;
+        return Collections.unmodifiableSet(requests);
     }
 
     public void setRequests(Set<TravelRequestViewModel> requests) {

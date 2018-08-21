@@ -37,10 +37,10 @@ public class ModelMapperTests {
 
     @Test
     public void testTravelServiceMapping_travel_expectTravelServiceModelWithMappedCollectionsOfObjects() {
-        String userId = "test-user-uuid";
+        String username = "test-username";
 
         User user = new User();
-        user.setId(userId);
+        user.setUsername(username);
 
 
         Travel travel = new Travel();
@@ -50,15 +50,15 @@ public class ModelMapperTests {
 
         TravelServiceModel tsm = this.configuration.getModelMapper().map(travel, TravelServiceModel.class);
 
-        assertEquals("User was not mapped", userId, ((UserLinkViewModel)(tsm.getAttendants().toArray()[0])).getId());
+        assertEquals("User was not mapped", username, ((UserLinkViewModel)(tsm.getAttendants().toArray()[0])).getUsername());
     }
 
     @Test
     public void testTravelDetailsVewMapping_travelServiceModel_expectTravelDetailsVewModelWithMappedCollectionsOfObjects() {
-        String userId = "test-user-uuid";
+        String username = "test-username";
 
         UserLinkViewModel user = new UserLinkViewModel();
-        user.setId(userId);
+        user.setUsername(username);
 
 
         TravelServiceModel travel = new TravelServiceModel();
@@ -68,7 +68,7 @@ public class ModelMapperTests {
 
         TravelDetailsViewModel tsm = this.configuration.getModelMapper().map(travel, TravelDetailsViewModel.class);
 
-        assertEquals("User was not mapped", userId, ((UserLinkViewModel) tsm.getAttendants().toArray()[1]).getId());
+        assertEquals("User was not mapped", username, ((UserLinkViewModel) tsm.getAttendants().toArray()[1]).getUsername());
     }
 
     @Test

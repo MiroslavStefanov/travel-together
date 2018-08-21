@@ -8,5 +8,7 @@ public interface DestinationService {
 
     void saveDestination(DestinationServiceModel destinationServiceModel);
 
+    DestinationServiceModel findDestinationByName(String name);
+
     List<String> getAllDestinationsNames();
 }

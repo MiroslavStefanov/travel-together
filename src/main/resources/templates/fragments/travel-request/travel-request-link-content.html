@@ -26,6 +26,7 @@
         let btnGroup = $('#' + requestId);
         btnGroup.remove();
     };
+    console.log(requestId);
     $('.btn-accept').click(() => {
         acceptRequest(requestId, travelId, userId, callback);
     });

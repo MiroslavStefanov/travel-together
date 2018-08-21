@@ -24,8 +24,8 @@ public class SessionListener {
         this.userService = userService;
     }
 
-    @EventListener
     @Async
+    @EventListener
     public void onAuthenticationSuccess(AuthenticationSuccessEvent event) {
         Set<TravelRequestServiceModel> requests = this.userService.getAllRequests(event.getAuthentication().getName());
         this.userRequestManager.addUser(event.getAuthentication().getName(), requests);

@@ -1,5 +1,7 @@
 package org.softuni.traveltogether.domain.models.service;
 
+import org.modelmapper.ModelMapper;
+import org.softuni.traveltogether.domain.models.view.TravelRequestViewModel;
 import org.softuni.traveltogether.domain.models.view.UserLinkViewModel;
 
 import java.time.LocalDateTime;
@@ -15,7 +17,7 @@ public class TravelServiceModel {
     private DestinationServiceModel toDestination;
     private UserLinkViewModel publisher;
     private Set<UserLinkViewModel> attendants;
-    private Set<TravelRequestServiceModel> requests;
+    private Set<TravelRequestViewModel> requests;
 
     public TravelServiceModel() {
     }
@@ -84,11 +86,19 @@ public class TravelServiceModel {
         this.attendants = attendants;
     }
 
-    public Set<TravelRequestServiceModel> getRequests() {
+    public Set<TravelRequestViewModel> getRequests() {
         return requests;
     }
 
-    public void setRequests(Set<TravelRequestServiceModel> requests) {
+    public void setRequests(Set<TravelRequestViewModel> requests) {
         this.requests = requests;
+    }
+
+    public static TravelServiceModel instantiateFromBindingModel(Object bindingModel, ModelMapper modelMapper, String publisherName) {
+        TravelServiceModel travelServiceModel = modelMapper.map(bindingModel, TravelServiceModel.class);
+        travelServiceModel.setPublishedAt(LocalDateTime.now());
+        travelServiceModel.setPublisher(new UserLinkViewModel());
+        travelServiceModel.getPublisher().setUsername(publisherName);
+        return travelServiceModel;
     }
 }

@@ -17,15 +17,15 @@
                           th:with="type='tel',label='Phone Number',fieldName='phoneNumber',labelClass='container text-center',class='p-0 col-sm-12',labelClass='text-blue2'">
                 </th:block>
 
-                <th:block th:insert="fragments/forms/form-control"
-                          th:with="type='file',label='Profile picture',fieldName='profilePictureFile',labelClass='container text-center',class='p-0 col-sm-12',labelClass='text-blue2'">
-                </th:block>
-
-                <!--<label class="text-blue2">Profile picture</label>
-                <div class="custom-file">
-                    <input type="file" class="custom-file-input" id="profile-pic" name="profilePictureFile">
-                    <label class="custom-file-label" for="profile-pic">Choose file...</label>
-                </div>-->
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="inputGroupFileAddon01">Upload</span>
+                    </div>
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="inputGroupFile01" name="profilePictureFile" aria-describedby="inputGroupFileAddon01">
+                        <label class="custom-file-label text-truncate" for="inputGroupFile01">Choose file</label>
+                    </div>
+                </div>
 
                 <hr/>
 
@@ -41,3 +41,9 @@
         </div>
     </div>
 </div>
+<script xmlns:th="http://www.thymeleaf.org" th:inline="javascript">
+    $('.custom-file-input').on('change', function() {
+        let fileName = $(this).val().split('\\').pop();
+        $(this).next('.custom-file-label').addClass("selected").html(fileName);
+    });
+</script>

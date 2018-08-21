@@ -31,12 +31,12 @@ public class DestinationController extends BaseController {
     }
 
     @PostMapping("/create")
-    public ModelAndView createPost(@Valid @ModelAttribute(name = "model") DestinationBindingModel destinationBindingModel, BindingResult bindingResult) {
+    public ModelAndView createPost(@Valid @ModelAttribute(DEFAULT_MODEL_NAME) DestinationBindingModel destinationBindingModel, BindingResult bindingResult) {
         if(bindingResult.hasErrors()) {
             return super.view("destination/create", destinationBindingModel);
         } else {
             this.destinationService.saveDestination(this.modelMapper.map(destinationBindingModel, DestinationServiceModel.class));
-            return super.redirect("/home");
+            return super.redirect("/travels");
         }
     }
 }

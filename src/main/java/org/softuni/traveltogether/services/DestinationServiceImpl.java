@@ -31,7 +31,7 @@ public class DestinationServiceImpl implements DestinationService {
     }
 
     @Override
-    @CacheEvict(DESTINATION_NAMES_CACHE)
+    @CacheEvict(cacheNames = {DESTINATION_NAMES_CACHE}, allEntries = true)
     public void saveDestination(DestinationServiceModel destinationServiceModel) {
         Destination destination = this.modelMapper.map(destinationServiceModel, Destination.class);
 
@@ -47,6 +47,11 @@ public class DestinationServiceImpl implements DestinationService {
             //better handling of errors
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public DestinationServiceModel findDestinationByName(String name) {
+        return this.modelMapper.map(this.destinationRepository.findFirstByName(name), DestinationServiceModel.class);
     }
 
     @Override

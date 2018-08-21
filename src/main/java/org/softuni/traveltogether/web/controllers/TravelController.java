@@ -2,10 +2,13 @@ package org.softuni.traveltogether.web.controllers;
 
 import org.modelmapper.ModelMapper;
 import org.softuni.traveltogether.domain.models.binding.TravelCreateBindingModel;
+import org.softuni.traveltogether.domain.models.service.TravelServiceModel;
+import org.softuni.traveltogether.domain.models.service.UserServiceModel;
 import org.softuni.traveltogether.domain.models.view.TravelCreateViewModel;
 import org.softuni.traveltogether.domain.models.view.TravelDetailsViewModel;
 import org.softuni.traveltogether.services.DestinationService;
 import org.softuni.traveltogether.services.TravelService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -14,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
+import java.security.Principal;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @Controller
@@ -21,7 +26,7 @@ import java.util.Map;
 public class TravelController extends BaseController {
     private static final String TRAVEL_ACTION_AUTHORIZATION_EXPRESSION_STRING =
             "hasRole(T(org.softuni.traveltogether.specific.UserRole).ROLE_ADMIN.name()) " +
-                    "|| @userServiceImpl.findUserByUsername(principal.username).id.equals(@travelServiceImpl.getTravel(#id).publisher.id)";
+                    "|| principal.username.equals(@travelServiceImpl.getTravel(#id).publisher.username)";
 
     private final TravelService travelService;
     private final DestinationService destinationService;
@@ -43,12 +48,13 @@ public class TravelController extends BaseController {
     }
 
     @PostMapping("/create")
-    public ModelAndView createPost(@Valid @ModelAttribute(name = "model") TravelCreateViewModel model, BindingResult bindingResult) {
+    public ModelAndView createPost(@Valid @ModelAttribute(DEFAULT_MODEL_NAME) TravelCreateViewModel model, BindingResult bindingResult, Principal principal) {
         if(bindingResult.hasErrors()) {
             model.setAllDestinations(this.destinationService.getAllDestinationsNames());
             return super.view("travels/form", model);
         }
-        return super.redirect("/travels/" + this.travelService.saveTravel(model.getBindingModel()));
+        TravelServiceModel travelServiceModel = TravelServiceModel.instantiateFromBindingModel(model.getBindingModel(), this.modelMapper, principal.getName());
+        return super.redirect("/travels/" + this.travelService.saveTravel(travelServiceModel));
     }
 
     @GetMapping("/{id}/edit")
@@ -63,12 +69,14 @@ public class TravelController extends BaseController {
 
     @PostMapping("/{id}/edit")
     @PreAuthorize(TRAVEL_ACTION_AUTHORIZATION_EXPRESSION_STRING)
-    public ModelAndView editPost(@Valid @ModelAttribute(name = "model") TravelCreateViewModel model, BindingResult bindingResult, @PathVariable("id") String id) {
+    public ModelAndView editPost(@Valid @ModelAttribute(DEFAULT_MODEL_NAME) TravelCreateViewModel model, BindingResult bindingResult, @PathVariable("id") String id) {
         if(bindingResult.hasErrors()) {
             model.setAllDestinations(this.destinationService.getAllDestinationsNames());
             return super.view("travels/form", model);
         }
-        return super.redirect("/travels/" + this.travelService.editTravel(id, model.getBindingModel()));
+        TravelServiceModel travelServiceModel = this.travelService.getTravel(id);
+        this.modelMapper.map(model.getBindingModel(), travelServiceModel);
+        return super.redirect("/travels/" + this.travelService.saveTravel(travelServiceModel));
     }
 
     @GetMapping("/{id}/delete")
@@ -98,11 +106,13 @@ public class TravelController extends BaseController {
 
     @GetMapping("")
     public ModelAndView all() {
-        return super.view("travels/all",this.destinationService.getAllDestinationsNames());
+        return super.view("travels/all", this.destinationService.getAllDestinationsNames());
     }
 
-    @RequestMapping(path = "/{id}/addAttendant", method = RequestMethod.PATCH, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void addAttendant(@RequestBody Map<String, Object> updates, @PathVariable("id") String travelId) {
-        this.travelService.addAttendant(travelId, updates.get("attendantId").toString());
+    @RequestMapping(path = "/{id}/{action}", method = RequestMethod.PATCH, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize(TRAVEL_ACTION_AUTHORIZATION_EXPRESSION_STRING + "|| #updates.get('attendantId').toString().equals(principal.getId())")
+    public @ResponseBody boolean manageAttendant(@RequestBody Map<String, Object> updates, @PathVariable("id") String id, @PathVariable("action") String action) {
+        this.travelService.manageAttendant(id, updates.get("attendantId").toString(), action);
+        return true;
     }
 }

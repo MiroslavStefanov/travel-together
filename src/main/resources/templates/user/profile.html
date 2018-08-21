@@ -20,8 +20,8 @@
             </div>
         </div>
     </div>
-    <div class="container-fluid bg-blue1 separator"></div>
-    <div class="container-fluid p-0 bg-yellow">
+    <div class="container-fluid bg-blue1 separator" th:if="${#strings.equals(#authentication.name, user.username)}"></div>
+    <div class="container-fluid p-0 bg-yellow" th:if="${#strings.equals(#authentication.name, user.username)}">
         <div class="container-fluid p-0" th:object="${user}">
             <div class="row w-100 mx-0 justify-content-between">
                 <div class="col-lg-4 col-md-6 col-sm-9 my-5 mx-sm-auto">
@@ -42,5 +42,4 @@
             </div>
         </div>
     </div>
-
 </div>

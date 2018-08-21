@@ -67,7 +67,6 @@
                             $.ajax({
                                 method: 'PATCH',
                                 url: '/users/' + action,
-                                dataType: 'json',
                                 contentType: 'application/json',
                                 data: JSON.stringify({
                                     username: data.username
@@ -78,10 +77,15 @@
                                     request.setRequestHeader(_hc, _tc);
                                 },
                                 success: (data) => {
-                                    console.log(data);
+                                    if(data === 'USER') {
+                                        user.find('#admin-panel-action').text('Promote')
+                                    } else if(data === 'ADMIN') {
+                                        user.find('#admin-panel-action').text('Demote')
+                                    }
+                                    user.find('#admin-panel-role').text(data);
                                 },
-                                error: () => {
-                                    console.log('Chushki');
+                                error: (xhr, textStatus, errorThrown) => {
+                                    window.location = '/';
                                 }
                             })
                         });
