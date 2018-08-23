@@ -3,6 +3,7 @@ package org.softuni.traveltogether.services;
 import org.modelmapper.ModelMapper;
 import org.softuni.traveltogether.domain.entities.Destination;
 import org.softuni.traveltogether.domain.models.service.DestinationServiceModel;
+import org.softuni.traveltogether.errorHandling.exceptions.DestinationException;
 import org.softuni.traveltogether.repositories.DestinationRepository;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -32,20 +33,30 @@ public class DestinationServiceImpl implements DestinationService {
 
     @Override
     @CacheEvict(cacheNames = {DESTINATION_NAMES_CACHE}, allEntries = true)
-    public void saveDestination(DestinationServiceModel destinationServiceModel) {
+    public String saveDestination(DestinationServiceModel destinationServiceModel) {
         Destination destination = this.modelMapper.map(destinationServiceModel, Destination.class);
 
         Set<ConstraintViolation<Destination>> errors = this.validator.validate(destination);
         if(!errors.isEmpty()) {
-            //send errors data
-            //throw exception
+            StringBuilder messageBuilder = new StringBuilder("Invalid properties of destination ")
+                    .append(errors.stream().findFirst().get().getRootBean())
+                    .append("\r\n");
+            for (ConstraintViolation<Destination> error : errors) {
+                messageBuilder
+                        .append("\t")
+                        .append(error.getPropertyPath().toString())
+                        .append(": ")
+                        .append(error.getInvalidValue()).append("\r\n");
+            }
+
+            throw new DestinationException(messageBuilder.toString());
         }
 
         try{
             destination = this.destinationRepository.saveAndFlush(destination);
+            return destination.getId();
         } catch (Exception e) {
-            //better handling of errors
-            e.printStackTrace();
+            throw new DestinationException("Saving travel failed.", e);
         }
     }
 

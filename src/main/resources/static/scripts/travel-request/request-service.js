@@ -1,4 +1,4 @@
-function createRequest(travelId, userId, succesCallback) {
+function createRequest(travelId, userId, successCallback) {
     let request = {
         travel: '/travel_api/' + travelId,
         user: '/users/' + userId,
@@ -14,7 +14,7 @@ function createRequest(travelId, userId, succesCallback) {
             let _hc = $("meta[name='_csrf_header']").attr("content");
             request.setRequestHeader(_hc, _tc);
         },
-        success: succesCallback
+        success: successCallback
     })
 }
 
@@ -36,22 +36,22 @@ function deleteRequest(requestId, successCallback) {
 }
 
 function acceptRequest(requestId, travelId, userId, successCallBack) {
-    deleteRequest(requestId);
-
-    $.ajax({
-        type: 'PATCH',
-        url: '/travels/' + travelId + '/add',
-        dataType: 'json',
-        contentType: 'application/json',
-        data: JSON.stringify({
-            attendantId: userId
-        }),
-        beforeSend: (request) => {
-            let _tc = $("meta[name='_csrf']").attr("content");
-            let _hc = $("meta[name='_csrf_header']").attr("content");
-            request.setRequestHeader(_hc, _tc);
-        },
-        success: successCallBack
+    deleteRequest(requestId, () => {
+        $.ajax({
+            type: 'PATCH',
+            url: '/travels/' + travelId + '/add',
+            dataType: 'json',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                attendantId: userId
+            }),
+            beforeSend: (request) => {
+                let _tc = $("meta[name='_csrf']").attr("content");
+                let _hc = $("meta[name='_csrf_header']").attr("content");
+                request.setRequestHeader(_hc, _tc);
+            },
+            success: successCallBack
+        });
     });
 }
 

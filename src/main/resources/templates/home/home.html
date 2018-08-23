@@ -81,6 +81,8 @@
                                         user.find('#admin-panel-action').text('Promote')
                                     } else if(data === 'ADMIN') {
                                         user.find('#admin-panel-action').text('Demote')
+                                    } else if(data === 'INVALID') {
+                                        window.location = '/';
                                     }
                                     user.find('#admin-panel-role').text(data);
                                 },

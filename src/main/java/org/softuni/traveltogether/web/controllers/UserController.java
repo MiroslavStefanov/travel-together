@@ -6,10 +6,12 @@ import org.softuni.traveltogether.domain.models.binding.UserEditBindingModel;
 import org.softuni.traveltogether.domain.models.binding.UserRegisterBindingModel;
 import org.softuni.traveltogether.domain.models.service.UserServiceModel;
 import org.softuni.traveltogether.domain.models.view.UserProfileViewModel;
+import org.softuni.traveltogether.errorHandling.exceptions.EntityNotFoundException;
 import org.softuni.traveltogether.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -19,6 +21,8 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Map;
+
+import static org.softuni.traveltogether.config.WebConstants.LOGIN_URL;
 
 @Controller
 public class UserController extends BaseController {
@@ -48,7 +52,7 @@ public class UserController extends BaseController {
         }
     }
 
-    @GetMapping("/login")
+    @GetMapping(LOGIN_URL)
     public ModelAndView login(@RequestParam(required = false, name = "error") String error) {
         return super.view("user/login", error, "error");
     }

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head th:insert="fragments/common/head" th:with="pageTitle = ${title}"></head>
+<body>
+<main>
+    <div class="container-fluid bg-red p-5">
+        <div class="container-fluid">
+            <img th:src="@{/assets/error-403.png}" class="img-fluid d-block mx-auto"/>
+        </div>
+        <div class="container-fluid">
+            <h1 class="text-white text-center my-5">Access denied &excl;</h1>
+            <h3 class="text-white text-center my-5">Looks like your destination is forbidden &excl;</h3>
+        </div>
+        <div class="container-fluid d-flex justify-content-center mt-5">
+            <a th:href="@{/}" class="btn btn-blue d-inline-block">
+                <i class="fa fa-home"></i> Back to homepage
+            </a>
+        </div>
+    </div>
+</main>
+</body>
+</html>

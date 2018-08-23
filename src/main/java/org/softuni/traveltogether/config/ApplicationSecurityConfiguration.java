@@ -7,7 +7,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -15,10 +14,7 @@ import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.web.multipart.MultipartResolver;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
-
-import java.security.Principal;
+import static org.softuni.traveltogether.config.WebConstants.*;
 
 @Configuration
 @EnableWebSecurity
@@ -54,40 +50,39 @@ public class ApplicationSecurityConfiguration extends WebSecurityConfigurerAdapt
                     .csrfTokenRepository(csrfTokenRepository())
                 .and()
                 .authorizeRequests()
-                    .antMatchers(WebConstants.ANONYMOUS_URLS).anonymous()
-                    .antMatchers("/css/**", "/scripts/**", "/assets/**", "/favicon.ico", "/travel_api/search/findTop5ByOrderByPublishedAtDesc").permitAll()
+                    .antMatchers(ANONYMOUS_URLS).anonymous()
+                    .antMatchers(PERMITTED_URLS).permitAll()
                     .antMatchers("/admin").hasAnyRole(UserRole.ROLE_ADMIN.name())
                     .anyRequest().authenticated()
                 .and()
                 .formLogin()
-                    .loginPage("/login")
+                    .loginPage(LOGIN_URL)
                     .usernameParameter("username")
                     .passwordParameter("password")
-                    .defaultSuccessUrl("/home", true)
-                    .failureHandler((req, res, e) -> res.sendRedirect("/login?error=" + e.getLocalizedMessage()))
+                    .defaultSuccessUrl(HOME_URL, true)
+                    .failureHandler((req, res, e) -> res.sendRedirect(LOGIN_URL + "?error=" + e.getLocalizedMessage()))
                 .and()
                 .exceptionHandling()
                     .accessDeniedHandler(((httpServletRequest, httpServletResponse, e) -> {
-                        for (String url : WebConstants.ANONYMOUS_URLS) {
+                        for (String url : ANONYMOUS_URLS) {
                             if (httpServletRequest.getRequestURL().toString().endsWith(url)) {
-                                httpServletResponse.sendRedirect("/home");
+                                httpServletResponse.sendRedirect(HOME_URL);
                                 return;
                             }
                         }
-                        e.printStackTrace();
-                        httpServletResponse.sendRedirect("/unauthorized");
+                        httpServletResponse.sendRedirect(ACCESS_DENIED_URL);
                     }))
 
                 .and()
                 .logout()
-                    .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                    .logoutRequestMatcher(new AntPathRequestMatcher(LOGOUT_URL))
                     .logoutSuccessUrl("/")
                     .invalidateHttpSession(true)
                 .and()
                 .sessionManagement()
                     .maximumSessions(MAX_SESSIONS_PER_USER)
                     .maxSessionsPreventsLogin(false)
-                    .expiredUrl("/login")
+                    .expiredUrl(LOGIN_URL)
                     .sessionRegistry(sessionRegistry())
         ;
     }

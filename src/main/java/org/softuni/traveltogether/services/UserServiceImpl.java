@@ -1,17 +1,25 @@
 package org.softuni.traveltogether.services;
 
 import org.modelmapper.ModelMapper;
+import org.softuni.traveltogether.common.exception.ExceptionUtils;
+import org.softuni.traveltogether.config.WebConstants;
 import org.softuni.traveltogether.domain.entities.Role;
 import org.softuni.traveltogether.domain.entities.Travel;
 import org.softuni.traveltogether.domain.entities.TravelRequest;
 import org.softuni.traveltogether.domain.entities.User;
+import org.softuni.traveltogether.domain.models.binding.UserRegisterBindingModel;
 import org.softuni.traveltogether.domain.models.service.TravelRequestServiceModel;
 import org.softuni.traveltogether.domain.models.service.UserServiceModel;
+import org.softuni.traveltogether.errorHandling.exceptions.EntityNotFoundException;
+import org.softuni.traveltogether.errorHandling.exceptions.UserEmailAlreadyUsedException;
+import org.softuni.traveltogether.errorHandling.exceptions.UserException;
+import org.softuni.traveltogether.errorHandling.exceptions.UsernameAlreadyUsedException;
 import org.softuni.traveltogether.repositories.RoleRepository;
 import org.softuni.traveltogether.repositories.UserRepository;
 import org.softuni.traveltogether.specific.UserRole;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.authentication.AccountExpiredException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.session.SessionInformation;
 import org.springframework.security.core.session.SessionRegistry;
@@ -19,6 +27,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
@@ -54,7 +63,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void saveUser(UserServiceModel userServiceModel) {
+    public String saveUser(UserServiceModel userServiceModel) {
         Optional<User> userCandidate;
         User user;
         if(userServiceModel.getId() != null
@@ -71,21 +80,39 @@ public class UserServiceImpl implements UserService {
 
         Set<ConstraintViolation<User>> errors = this.validator.validate(user);
         if(!errors.isEmpty()) {
-            //send errors data
-            //throw exception
+            StringBuilder messageBuilder = new StringBuilder("Invalid properties of user ")
+                    .append(errors.stream().findFirst().get().getRootBean())
+                    .append("\r\n");
+            for (ConstraintViolation<User> error : errors) {
+                messageBuilder
+                        .append("\t")
+                        .append(error.getPropertyPath().toString())
+                        .append(": ")
+                        .append(error.getInvalidValue()).append("\r\n");
+            }
+
+            throw new UserException(messageBuilder.toString());
         }
 
         try{
             user = this.userRepository.saveAndFlush(user);
+            return user.getId();
         } catch (Exception e) {
-            //better handling of errors
-            e.printStackTrace();
+            String rootCause = ExceptionUtils.getRootCauseMessage(e).toLowerCase();
+            if(rootCause.contains(WebConstants.UNIQUE_USERNAME_CONSTRAINT_NAME.toLowerCase()))
+                throw new UsernameAlreadyUsedException(userServiceModel);
+            else if(rootCause.contains(WebConstants.UNIQUE_EMAIL_CONSTRAINT_NAME.toLowerCase()))
+                throw new UserEmailAlreadyUsedException(userServiceModel);
+            else
+                throw new UserException("Saving travel failed.", e);
         }
     }
 
     @Override
     public UserServiceModel findUserByUsername(String username) {
         User user = (User)this.loadUserByUsername(username);
+        if(user == null)
+            throw new EntityNotFoundException("There is no user with username: " + username);
         return this.modelMapper.map(user, UserServiceModel.class);
     }
 
@@ -100,8 +127,9 @@ public class UserServiceImpl implements UserService {
                 }
             }
             return requests;
+        } else {
+            throw new EntityNotFoundException("There is no user with username: " + username);
         }
-        return null;
     }
 
     @Override
@@ -109,6 +137,9 @@ public class UserServiceImpl implements UserService {
         if(userServiceModel.getUsername() == null) {
             throw new IllegalArgumentException();
         }
+
+        if(pictureFile == null)
+            return;
 
         String pictureId = PROFILE_PICTURE_CLOUD_FOLDER + userServiceModel.getUsername();
 
@@ -120,27 +151,32 @@ public class UserServiceImpl implements UserService {
             );
             userServiceModel.setProfilePictureLink(pictureUrl);
         } catch (IOException e) {
-            e.printStackTrace();
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(e);
         }
     }
 
     @Override
     public String changeUserRole(String action, String username) {
+        if(action == null)
+            throw new IllegalArgumentException();
+
         User user = this.userRepository.findFirstByUsername(username);
         String role = UserRole.ROLE_INVALID.name();
-        if(user != null && user.getAuthorities().stream().noneMatch(r -> r.getAuthority().equals(UserRole.ROLE_ROOT.name()))) {
-            if(action.toLowerCase().equals("promote")) {
-                user.getAuthorities().add(this.roleRepository.findFirstByAuthority(UserRole.ROLE_ADMIN.name()));
-                role = UserRole.ROLE_ADMIN.name();
-            } else if(action.toLowerCase().equals("demote")){
-                user.getAuthorities().removeIf(r -> r.getAuthority().equals(UserRole.ROLE_ADMIN.name()));
-                role = UserRole.ROLE_USER.name();
-                this.kickUser(username);
+        if(user != null) {
+            if(user.getAuthorities().stream().noneMatch(r -> r.getAuthority().equals(UserRole.ROLE_ROOT.name()))) {
+                if(action.toLowerCase().equals("promote")) {
+                    user.getAuthorities().add(this.roleRepository.findFirstByAuthority(UserRole.ROLE_ADMIN.name()));
+                    role = UserRole.ROLE_ADMIN.name();
+                } else if(action.toLowerCase().equals("demote")){
+                    user.getAuthorities().removeIf(r -> r.getAuthority().equals(UserRole.ROLE_ADMIN.name()));
+                    role = UserRole.ROLE_USER.name();
+                    this.kickUser(username);
+                }
+                this.userRepository.saveAndFlush(user);
             }
-            this.userRepository.saveAndFlush(user);
-        }
-        return role.split("_")[1];
+            return role.split("_")[1];
+        } else
+            throw new EntityNotFoundException("There is no user with username: " + username);
     }
 
     @Override
@@ -149,7 +185,7 @@ public class UserServiceImpl implements UserService {
         if(user != null) {
             user.setLastActive(lastActive);
             this.userRepository.save(user);
-        }
+        } else throw new EntityNotFoundException("There is no user with username: " + username);
     }
 
     @Override
@@ -163,7 +199,7 @@ public class UserServiceImpl implements UserService {
 
         if(principal != null) {
             this.sessionRegistry.getAllSessions(principal, true).forEach(SessionInformation::expireNow);
-        }
+        } else throw new EntityNotFoundException("There is no user with username: " + username);
     }
 
     @Override
@@ -174,6 +210,9 @@ public class UserServiceImpl implements UserService {
         if(!user.isEnabled()) {
             throw new DisabledException("User " + s + " is currently disabled");
         }
+        if(!user.isAccountNonExpired())
+            throw new AccountExpiredException("User" + s + " is with expired account");
+
         return user;
     }
 

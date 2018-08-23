@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface DestinationService {
 
-    void saveDestination(DestinationServiceModel destinationServiceModel);
+    String saveDestination(DestinationServiceModel destinationServiceModel);
 
     DestinationServiceModel findDestinationByName(String name);
 

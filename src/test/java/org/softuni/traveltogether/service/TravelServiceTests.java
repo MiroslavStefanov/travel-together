@@ -3,6 +3,7 @@ package org.softuni.traveltogether.service;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.modelmapper.ModelMapper;
+import org.softuni.traveltogether.config.ModelMapperConfiguration;
 import org.softuni.traveltogether.domain.entities.Destination;
 import org.softuni.traveltogether.domain.entities.Travel;
 import org.softuni.traveltogether.domain.entities.User;
@@ -31,7 +32,7 @@ import static junit.framework.TestCase.*;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @DataJpaTest
-@Import({TravelServiceImpl.class, ModelMapper.class, LocalValidatorFactoryBean.class})
+@Import({TravelServiceImpl.class, ModelMapperConfiguration.class, LocalValidatorFactoryBean.class})
 @ActiveProfiles("test")
 public class TravelServiceTests {
     @Autowired

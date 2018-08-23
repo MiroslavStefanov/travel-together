@@ -2,13 +2,16 @@ package org.softuni.traveltogether.web.controllers;
 
 import org.modelmapper.ModelMapper;
 import org.softuni.traveltogether.domain.models.view.HomeViewModel;
+import org.softuni.traveltogether.errorHandling.exceptions.EntityNotFoundException;
 import org.softuni.traveltogether.services.UserService;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.HttpSession;
 import java.security.Principal;
+
+import static org.softuni.traveltogether.config.WebConstants.HOME_URL;
 
 @Controller
 public class HomeController extends BaseController {
@@ -25,8 +28,9 @@ public class HomeController extends BaseController {
         return super.view("home/index");
     }
 
-    @GetMapping("/home")
+    @GetMapping(HOME_URL)
     public ModelAndView home(Principal principal) {
-        return super.view("home/home", this.modelMapper.map(this.userService.findUserByUsername(principal.getName()), HomeViewModel.class));
+        throw new EntityNotFoundException("");
+        /*return super.view("home/home", this.modelMapper.map(this.userService.findUserByUsername(principal.getName()), HomeViewModel.class));*/
     }
 }

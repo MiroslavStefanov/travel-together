@@ -1,6 +1,7 @@
 package org.softuni.traveltogether.domain.entities;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.softuni.traveltogether.config.WebConstants;
 import org.softuni.traveltogether.specific.UserRole;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -14,7 +15,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "users")
+@Table(name = "users",
+        uniqueConstraints = {
+                @UniqueConstraint(name = WebConstants.UNIQUE_USERNAME_CONSTRAINT_NAME, columnNames = "username"),
+                @UniqueConstraint(name = WebConstants.UNIQUE_EMAIL_CONSTRAINT_NAME, columnNames = "email")
+        })
 public class User implements UserDetails {
 
     private String id;
@@ -56,7 +61,7 @@ public class User implements UserDetails {
         this.id = id;
     }
 
-    @Column(unique = true)
+    @Column(name="email")
     public String getEmail() {
         return email;
     }
@@ -99,7 +104,7 @@ public class User implements UserDetails {
 
     @NotNull
     @Size(min = 3, max = 20)
-    @Column(unique = true, nullable = false, length = 20)
+    @Column(name="username", nullable = false, length = 20)
     @Override
     public String getUsername() {
         return username;

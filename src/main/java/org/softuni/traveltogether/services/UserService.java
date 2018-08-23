@@ -4,6 +4,7 @@ import org.softuni.traveltogether.domain.models.binding.UserRegisterBindingModel
 import org.softuni.traveltogether.domain.models.service.TravelRequestServiceModel;
 import org.softuni.traveltogether.domain.models.service.UserServiceModel;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
@@ -11,7 +12,7 @@ import java.util.Set;
 
 public interface UserService extends UserDetailsService {
 
-    void saveUser(UserServiceModel userModel);
+    String saveUser(UserServiceModel userModel);
 
     UserServiceModel findUserByUsername(String username);
 

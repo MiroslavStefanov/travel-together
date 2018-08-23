@@ -25,17 +25,17 @@
         <div class="container-fluid p-0" th:object="${user}">
             <div class="row w-100 mx-0 justify-content-between">
                 <div class="col-lg-4 col-md-6 col-sm-9 my-5 mx-sm-auto">
-                    <th:block th:include="fragments/scrollable-box"
+                    <th:block th:include="fragments/util/scrollable-box"
                               th:with="boxTitle='My travels',altText='No published travels',collection=${user.homeViewModel.myTravels},template='fragments/travel/travel-link-content'">
                     </th:block>
                 </div>
                 <div class="col-lg-4 col-md-6 col-sm-9 my-5 mx-sm-auto">
-                    <th:block th:include="fragments/scrollable-box"
+                    <th:block th:include="fragments/util/scrollable-box"
                               th:with="boxTitle='Attended travels',altText='No attended travels',collection=${user.homeViewModel.attendedTravels},template='fragments/travel/travel-link-content'">
                     </th:block>
                 </div>
                 <div class="col-lg-4 col-md-6 col-sm-9 my-5 mx-sm-auto">
-                    <th:block th:include="fragments/scrollable-box"
+                    <th:block th:include="fragments/util/scrollable-box"
                               th:with="boxTitle='Requests',altText='No requests',collection=*{requests},template='fragments/travel-request/travel-request-link-content'">
                     </th:block>
                 </div>
