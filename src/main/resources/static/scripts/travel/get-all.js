@@ -1,1 +1,0 @@
-pageService.setPageHandler(travelPageHandler);
