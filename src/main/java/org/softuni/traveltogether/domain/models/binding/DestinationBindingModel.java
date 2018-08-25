@@ -7,6 +7,7 @@ public class DestinationBindingModel {
     private String name;
     private Double latitude;
     private Double longitude;
+    private String description;
 
     public DestinationBindingModel() {
     }
@@ -44,5 +45,13 @@ public class DestinationBindingModel {
 
     public void setLongitude(Double longitude) {
         this.longitude = longitude;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

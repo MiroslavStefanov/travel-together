@@ -12,7 +12,8 @@ public class UserProfileViewModel {
     private String phoneNumber;
     private String profilePictureLink;
     private Set<TravelRequestViewModel> requests;
-    private HomeViewModel homeViewModel;
+    private Set<TravelLinkViewModel> myTravels;
+    private Set<TravelLinkViewModel> attendedTravels;
 
     public UserProfileViewModel() {
         requests = new HashSet<>();
@@ -78,11 +79,20 @@ public class UserProfileViewModel {
         this.requests = requests;
     }
 
-    public HomeViewModel getHomeViewModel() {
-        return homeViewModel;
+    public Set<TravelLinkViewModel> getMyTravels() {
+        return myTravels;
     }
 
-    public void setHomeViewModel(HomeViewModel homeViewModel) {
-        this.homeViewModel = homeViewModel;
+    public void setMyTravels(Set<TravelLinkViewModel> myTravels) {
+        this.myTravels = myTravels;
     }
+
+    public Set<TravelLinkViewModel> getAttendedTravels() {
+        return attendedTravels;
+    }
+
+    public void setAttendedTravels(Set<TravelLinkViewModel> attendedTravels) {
+        this.attendedTravels = attendedTravels;
+    }
+
 }

@@ -49,6 +49,10 @@ public class ModelMapperConfiguration {
         this.userServiceInverseMapping();
         this.homeViewMapping();
         this.userProfileViewMapping();
+
+        //DESTINATION
+        this.destinationServiceMapping();
+
     }
 
     private void addConverters() {
@@ -138,20 +142,24 @@ public class ModelMapperConfiguration {
     }
 
     private void homeViewMapping() {
-        this.mapper.createTypeMap(UserServiceModel.class, HomeViewModel.class)
-                .addMappings(m -> m.map(UserServiceModel::getTravels, HomeViewModel::setMyTravels));
+
     }
 
     private void userProfileViewMapping() {
-        Converter<UserServiceModel, HomeViewModel> homeCon = ctx -> this.mapper.map(ctx.getSource(), HomeViewModel.class);
-
         this.mapper.createTypeMap(UserServiceModel.class, UserProfileViewModel.class)
-                .addMappings(new PropertyMap<UserServiceModel, UserProfileViewModel>() {
-                    @Override
-                    protected void configure() {
-                        using(homeCon).
-                            map(source, destination.getHomeViewModel());
-                    }
+                .addMappings(m -> m.map(UserServiceModel::getTravels, UserProfileViewModel::setMyTravels));
+    }
+
+    //DESTINATION
+    private void destinationServiceMapping() {
+        this.mapper.createTypeMap(Destination.class, DestinationServiceModel.class)
+                .addMappings(m -> m.map(d -> d.getTravels().size(), DestinationServiceModel::setTravelCount));
+    }
+
+    private void destinationServiceInverseMapping() {
+        this.mapper.createTypeMap(DestinationServiceModel.class, Destination.class)
+                .addMappings(m -> {
+                    m.skip(Destination::setImageUrls);
                 });
     }
 }

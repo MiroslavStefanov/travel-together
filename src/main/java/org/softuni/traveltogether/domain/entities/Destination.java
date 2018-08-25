@@ -5,6 +5,7 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -14,12 +15,16 @@ public class Destination {
     private String name;
     private Double latitude;
     private Double longitude;
+    private String description;
     private Set<String> imageUrls;
+    private Set<Travel> travels;
 
     public Destination() {
+        this.travels = new HashSet<>();
     }
 
     public Destination(String name, Double latitude, Double longitude) {
+        this.travels = new HashSet<>();
         this.name = name;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -69,6 +74,24 @@ public class Destination {
 
     public void setLongitude(Double longitude) {
         this.longitude = longitude;
+    }
+
+    @Lob
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    @OneToMany(mappedBy = "toDestination", cascade = {CascadeType.REMOVE}, orphanRemoval = true)
+    public Set<Travel> getTravels() {
+        return travels;
+    }
+
+    public void setTravels(Set<Travel> travels) {
+        this.travels = travels;
     }
 
     @Lob

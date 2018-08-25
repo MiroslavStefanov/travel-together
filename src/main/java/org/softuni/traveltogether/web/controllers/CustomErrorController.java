@@ -21,7 +21,7 @@ public class CustomErrorController extends BaseController implements ErrorContro
 
     @GetMapping(WebConstants.ACCESS_DENIED_URL)
     public ModelAndView unauthorized() {
-        return super.page("error/error-404");
+        return super.page("error/error-403");
     }
 
     @Override

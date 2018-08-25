@@ -138,7 +138,7 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException();
         }
 
-        if(pictureFile == null)
+        if(pictureFile == null || pictureFile.isEmpty())
             return;
 
         String pictureId = PROFILE_PICTURE_CLOUD_FOLDER + userServiceModel.getUsername();
@@ -167,12 +167,13 @@ public class UserServiceImpl implements UserService {
                 if(action.toLowerCase().equals("promote")) {
                     user.getAuthorities().add(this.roleRepository.findFirstByAuthority(UserRole.ROLE_ADMIN.name()));
                     role = UserRole.ROLE_ADMIN.name();
+                    this.userRepository.saveAndFlush(user);
                 } else if(action.toLowerCase().equals("demote")){
                     user.getAuthorities().removeIf(r -> r.getAuthority().equals(UserRole.ROLE_ADMIN.name()));
                     role = UserRole.ROLE_USER.name();
+                    this.userRepository.saveAndFlush(user);
                     this.kickUser(username);
                 }
-                this.userRepository.saveAndFlush(user);
             }
             return role.split("_")[1];
         } else

@@ -5,6 +5,4 @@
     <button id="right-ellipsis" class="btn col-xs-1 m-1" onclick="pageService.selectPage(this)">...</button>
     <button id="next" class="btn col-xs-1 m-1" onclick="pageService.next()">&gt;</button>
 </div>
-<script xmlns:th="http://www.w3.org/1999/xhtml" th:inline="javascript">
-    $(document).ready(() => pageService.handlePage());
-</script>
+<script xmlns:th="http://www.w3.org/1999/xhtml" th:src="@{/scripts/util/page-service.js}"></script>

@@ -3,7 +3,7 @@
         <h1 class="text-center text-blue2 font-weight-bold pb-4" th:text="'Edit infromation'"></h1>
         <!--/*@thymesVar id="model" type="org.softuni.traveltogether.domain.models.binding.UserEditBindingModel"*/-->
         <div class="container-fluid justify-content-center d-flex">
-            <form method="post" enctype="multipart/form-data" th:action="@{/profile/edit}" th:object="${model}">
+            <form method="post" enctype="multipart/form-data" th:action="@{/profile/edit((${_csrf.parameterName})=(${_csrf.token}))}" th:object="${model}">
                 <div class="form-row">
                     <th:block th:insert="fragments/forms/form-control"
                               th:with="type='text',label='First Name',fieldName='firstName',class='pr-2 col-sm-12 col-md-6',labelClass='text-blue2'">
@@ -22,15 +22,14 @@
                         <span class="input-group-text" id="inputGroupFileAddon01">Upload</span>
                     </div>
                     <div class="custom-file">
-                        <input type="file" class="custom-file-input" id="inputGroupFile01" name="profilePictureFile" aria-describedby="inputGroupFileAddon01">
+                        <input type="file" class="custom-file-input" id="inputGroupFile01" name="profilePictureFile" aria-describedby="inputGroupFileAddon01" accept="image">
                         <label class="custom-file-label text-truncate" for="inputGroupFile01">Choose file</label>
                     </div>
                 </div>
+                <div class="alert alert-danger" role="alert" th:if="${#fields.hasGlobalErrors()}" th:text="${#strings.listJoin(#fields.globalErrors(), '<br/>')}">
+                </div>
 
                 <hr/>
-
-                <input type="hidden" th:name="${_csrf.parameterName}"
-                       th:value="${_csrf.token}" />
 
                 <div class="form-group">
                     <div class="d-flex justify-content-center btn-group">

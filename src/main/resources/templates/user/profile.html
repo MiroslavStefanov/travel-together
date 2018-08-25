@@ -5,7 +5,7 @@
             <div class="col-md-6 col-sm-10 d-flex align-items-center py-2">
                 <img th:src="*{profilePictureLink}" class="img-thumbnail w-100 profile-picture mx-auto">
             </div>
-            <div class="col-md-6 col-sm-10 border-blue2 px-4 py-2">
+            <div class="col-md-6 col-sm-10 border-blue2 px-4 py-2 scrollable-horizontal">
                 <div><h3 class="text-blue2">Username:</h3></div>
                 <div><h3><span class="text-blue1" th:text="*{username}"></span></h3></div>
                 <div><h3 class="text-blue2">Name: </h3></div>
@@ -13,7 +13,7 @@
                 <div><h3 class="text-blue2">Email: </h3></div>
                 <div><h3><span class="text-blue1" th:text="*{email}"></span></h3></div>
                 <div><h3 class="text-blue2">Phone number: </h3></div>
-                <div><h3><span class="text-blue1" th:text="${user.phoneNumber == null ? 'No phone number provided' : user.phoneNumber}"></span></h3></div>
+                <div><h3><span class="text-blue1" th:text="${user.phoneNumber == null || #strings.isEmpty(user.phoneNumber) ? 'No phone number provided' : user.phoneNumber}"></span></h3></div>
                 <div class="d-flex justify-content-end" th:if="${#strings.equals(user.username, #authentication.name)}">
                     <a th:href="@{/profile/edit}"><i class="fa fa-pen-square fa-2x"></i></a>
                 </div>
@@ -26,12 +26,12 @@
             <div class="row w-100 mx-0 justify-content-between">
                 <div class="col-lg-4 col-md-6 col-sm-9 my-5 mx-sm-auto">
                     <th:block th:include="fragments/util/scrollable-box"
-                              th:with="boxTitle='My travels',altText='No published travels',collection=${user.homeViewModel.myTravels},template='fragments/travel/travel-link-content'">
+                              th:with="boxTitle='My travels',altText='No published travels',collection=${user.myTravels},template='fragments/travel/travel-link-content'">
                     </th:block>
                 </div>
                 <div class="col-lg-4 col-md-6 col-sm-9 my-5 mx-sm-auto">
                     <th:block th:include="fragments/util/scrollable-box"
-                              th:with="boxTitle='Attended travels',altText='No attended travels',collection=${user.homeViewModel.attendedTravels},template='fragments/travel/travel-link-content'">
+                              th:with="boxTitle='Attended travels',altText='No attended travels',collection=${user.attendedTravels},template='fragments/travel/travel-link-content'">
                     </th:block>
                 </div>
                 <div class="col-lg-4 col-md-6 col-sm-9 my-5 mx-sm-auto">

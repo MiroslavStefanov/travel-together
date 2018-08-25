@@ -16,8 +16,12 @@
     </div>
 
 </div>
-<script xmlns:th="http://www.w3.org/1999/xhtml" th:src="@{/scripts/map/get-photos.js}"></script>
+<script xmlns:th="http://www.w3.org/1999/xhtml" th:src="@{/scripts/util/map-service.js}"></script>
 <script xmlns:th="http://www.w3.org/1999/xhtml" th:inline="javascript">
-    pageService.setPageHandler(travelPageHandler);
+    $(document).ready(() => {
+        mapService.initMap('map', {lat: 0, lng: 0}, 1);
+        pageService.setPageHandler(travelPageHandler);
+        pageService.handlePage();
+    })
 </script>
 

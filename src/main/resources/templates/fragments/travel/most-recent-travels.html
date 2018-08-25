@@ -1,7 +1,7 @@
-<section th:fragment="most-recent-travels" id="recent-travels" xmlns:th="http://www.w3.org/1999/xhtml">
+<div class="container-fluid" th:fragment="most-recent-travels" id="recent-travels" xmlns:th="http://www.w3.org/1999/xhtml">
     <div hidden>
         <div id="map"></div>
-        <th:block th:include="fragments/util/carousel"></th:block>
+        <th:block th:include="fragments/util/carousel" th:with="imgClass='travel-recent-picture'"></th:block>
         <th:block th:include="fragments/travel/travels-row"></th:block>
     </div>
 
@@ -12,14 +12,15 @@
         </div>
         <a class="btn btn-lg btn-red" th:href="@{/travels}">See all...</a>
     </div>
-</section>
-<script xmlns:th="http://www.w3.org/1999/xhtml" th:src="@{/scripts/map/get-photos.js}"></script>
+</div>
+<script xmlns:th="http://www.w3.org/1999/xhtml" th:src="@{/scripts/util/map-service.js}"></script>
 <script xmlns:th="http://www.w3.org/1999/xhtml" th:inline="javascript">
     $(document).ready(() => {
         $.ajax({
             type: 'GET',
             url: '/travel_api/search/findTop5ByOrderByPublishedAtDesc',
             success: (data) => {
+                mapService.initMap('map', {lat: 0, lng: 0}, 1);
                 let section = $('#most-recent');
                 let row = fillRow(data);
                 section.empty();

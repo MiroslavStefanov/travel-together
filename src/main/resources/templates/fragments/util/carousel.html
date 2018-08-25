@@ -1,11 +1,11 @@
-<div id="carousel" class="carousel slide h-100" data-ride="carousel">
+<div id="carousel" class="carousel slide h-100" data-ride="carousel" xmlns:th="http://www.w3.org/1999/xhtml">
     <ol class="carousel-indicators">
         <li></li>
     </ol>
     <div class="carousel-inner h-100">
         <div class="carousel-item h-100">
             <div class="h-100 d-flex align-items-center">
-                <img class="d-block m-auto mt-5 img-fluid travel-recent-picture">
+                <img class="d-block m-auto mt-5 img-fluid" th:classappend="${imgClass != null? imgClass : ''}">
             </div>
         </div>
     </div>

@@ -6,8 +6,8 @@ import java.util.stream.Collectors;
 
 public class TravelDetailsViewModel {
     private String id;
-    private DestinationViewModel fromDestination;
-    private DestinationViewModel toDestination;
+    private DestinationLinkViewModel fromDestination;
+    private DestinationLinkViewModel toDestination;
     private LocalDateTime departureTime;
     private UserLinkViewModel publisher;
     private LocalDateTime publishedAt;
@@ -26,19 +26,19 @@ public class TravelDetailsViewModel {
         this.id = id;
     }
 
-    public DestinationViewModel getFromDestination() {
+    public DestinationLinkViewModel getFromDestination() {
         return fromDestination;
     }
 
-    public void setFromDestination(DestinationViewModel fromDestination) {
+    public void setFromDestination(DestinationLinkViewModel fromDestination) {
         this.fromDestination = fromDestination;
     }
 
-    public DestinationViewModel getToDestination() {
+    public DestinationLinkViewModel getToDestination() {
         return toDestination;
     }
 
-    public void setToDestination(DestinationViewModel toDestination) {
+    public void setToDestination(DestinationLinkViewModel toDestination) {
         this.toDestination = toDestination;
     }
 

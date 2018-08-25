@@ -15,6 +15,6 @@ public class AuthenticationWrapperImpl implements AuthenticationWrapper {
 
     @Override
     public boolean isAuthenticated() {
-        return !(this.getAuthentication() instanceof AnonymousAuthenticationToken);
+        return (this.getAuthentication() != null) && !(this.getAuthentication() instanceof AnonymousAuthenticationToken);
     }
 }

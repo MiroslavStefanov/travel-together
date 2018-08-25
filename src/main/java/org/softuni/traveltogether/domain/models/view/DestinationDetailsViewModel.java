@@ -1,17 +1,18 @@
-package org.softuni.traveltogether.domain.models.service;
+package org.softuni.traveltogether.domain.models.view;
 
+import java.util.Collections;
 import java.util.Set;
 
-public class DestinationServiceModel {
+public class DestinationDetailsViewModel {
     private String id;
     private String name;
     private Double latitude;
     private Double longitude;
     private String description;
-    private Long travelCount;
     private Set<String> imageUrls;
+    private Long travelCount;
 
-    public DestinationServiceModel() {
+    public DestinationDetailsViewModel() {
     }
 
     public String getId() {
@@ -63,7 +64,7 @@ public class DestinationServiceModel {
     }
 
     public Set<String> getImageUrls() {
-        return imageUrls;
+        return Collections.unmodifiableSet(this.imageUrls);
     }
 
     public void setImageUrls(Set<String> imageUrls) {

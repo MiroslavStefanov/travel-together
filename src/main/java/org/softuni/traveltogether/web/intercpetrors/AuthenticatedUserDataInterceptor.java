@@ -33,7 +33,8 @@ public class AuthenticatedUserDataInterceptor implements HandlerInterceptor {
                 && modelAndView != null
                 && !modelAndView.getViewName().startsWith("redirect:")
                 && authenticationWrapper.isAuthenticated()) {
-            UserServiceModel currentUser = this.userService.findUserByUsername(this.authenticationWrapper.getAuthentication().getName());
+            String username = this.authenticationWrapper.getAuthentication().getName();
+            UserServiceModel currentUser = this.userService.findUserByUsername(username);
             if(currentUser != null) {
                 modelAndView.addObject(REQUEST_COUNT_NAME, this.userRequestManager.getRequestCount(currentUser.getUsername()));
                 modelAndView.addObject(CURRENT_USER_ID_NAME, currentUser.getId());

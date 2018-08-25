@@ -20,6 +20,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
 import java.security.Principal;
+import java.util.Locale;
 import java.util.Map;
 
 import static org.softuni.traveltogether.config.WebConstants.LOGIN_URL;
@@ -74,9 +75,9 @@ public class UserController extends BaseController {
     }
 
     @PostMapping("/profile/edit")
-    public ModelAndView editProfilePost(@ModelAttribute(DEFAULT_MODEL_NAME) UserEditBindingModel userEditBindingModel, BindingResult bindingResult, Principal principal) throws IllegalAccessException {
+    public ModelAndView editProfilePost(@Valid @ModelAttribute(DEFAULT_MODEL_NAME) UserEditBindingModel userEditBindingModel, BindingResult bindingResult, Principal principal) throws IllegalAccessException {
         if(bindingResult.hasErrors()) {
-            return super.view("user/register", userEditBindingModel);
+            return super.view("user/edit", userEditBindingModel);
         } else {
             UserServiceModel userServiceModel = this.userService.findUserByUsername(principal.getName());
             this.modelMapper.map(userEditBindingModel, userServiceModel);

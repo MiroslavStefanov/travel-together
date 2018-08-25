@@ -52,7 +52,7 @@ public class ApplicationSecurityConfiguration extends WebSecurityConfigurerAdapt
                 .authorizeRequests()
                     .antMatchers(ANONYMOUS_URLS).anonymous()
                     .antMatchers(PERMITTED_URLS).permitAll()
-                    .antMatchers("/admin").hasAnyRole(UserRole.ROLE_ADMIN.name())
+                    .regexMatchers(ADMIN_URLS_REGEX).hasAnyRole(UserRole.ROLE_ADMIN.name())
                     .anyRequest().authenticated()
                 .and()
                 .formLogin()

@@ -1,0 +1,98 @@
+<div
+        sec:authorize="hasAuthority(T(org.softuni.traveltogether.specific.UserRole).ROLE_ADMIN.name())"
+        class="bg-blue2 rounded py-2 px-4 ml-lg-auto order-lg-2 col-lg col-md-7 d-inline-block my-lg-auto my-5"
+        xmlns:sec="http://www.w3.org/1999/xhtml">
+    <h3 class="text-white text-center w-100">Admin panel</h3>
+    <div class="container bg-white rounded mb-3 pb-2">
+        <h4 class="text-blue2 text-center w-100">Find user</h4>
+        <div class="w-100 d-flex justify-content-center">
+            <input type="text" placeholder="username" class="form-control w-50 mr-4"
+                   id="admin-panel-username-input"/>
+            <button type="button" class="btn btn-blue" id="admin-panel-find">Find</button>
+        </div>
+        <div class="w-100 d-flex justify-content-center w-100 mt-3">
+            <table class="table table-hover" id="admin-panel-user">
+                <thead>
+                <tr>
+                    <th scope="col">Username</th>
+                    <th scope="col">Role</th>
+                    <th scope="col">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td id="admin-panel-username"></td>
+                    <td id="admin-panel-role"></td>
+                    <td>
+                        <button id="admin-panel-action" class="btn btn-sm btn-blue"/>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="w-100" id="admin-panel-no-user">
+                <h5 class="error-light text-center">No users found</h5>
+            </div>
+        </div>
+    </div>
+</div>
+<script xmlns:th="http://www.thymeleaf.org" th:inline="javascript">
+    $(document).ready(() => {
+        $('#admin-panel-find').click(() => {
+            $('#admin-panel-user').hide();
+            $('#admin-panel-no-user').hide();
+            let username = $('#admin-panel-username-input').val();
+            $.ajax({
+                method: 'GET',
+                url: '/users/search/findUser?projection=userAdminProjection&username=' + username,
+                success: (data) => {
+                    let user = $('#admin-panel-user');
+                    user.find('#admin-panel-username').text(data.username);
+                    let role = data.role;
+                    user.find('#admin-panel-role').text(role);
+                    if(role !== 'INVALID' && role !== 'ROOT') {
+                        if(role === 'USER') {
+                            user.find('#admin-panel-action').text('Promote')
+                        } else if(role === 'ADMIN') {
+                            user.find('#admin-panel-action').text('Demote')
+                        }
+                        user.find('#admin-panel-action').click(function () {
+                            let action = $(this).text();
+                            $.ajax({
+                                method: 'PATCH',
+                                url: '/users/' + action,
+                                contentType: 'application/json',
+                                data: JSON.stringify({
+                                    username: data.username
+                                }),
+                                beforeSend: (request) => {
+                                    let _tc = $("meta[name='_csrf']").attr("content");
+                                    let _hc = $("meta[name='_csrf_header']").attr("content");
+                                    request.setRequestHeader(_hc, _tc);
+                                },
+                                success: (data) => {
+                                    if(data === 'USER') {
+                                        user.find('#admin-panel-action').text('Promote')
+                                    } else if(data === 'ADMIN') {
+                                        user.find('#admin-panel-action').text('Demote')
+                                    } else if(data === 'INVALID') {
+                                        window.location = '/';
+                                    }
+                                    user.find('#admin-panel-role').text(data);
+                                },
+                                error: (xhr, textStatus, errorThrown) => {
+                                    window.location = '/';
+                                }
+                            })
+                        });
+                        user.show();
+                    } else {
+                        $('#admin-panel-no-user').show();
+                    }
+                },
+                error(xhr, textStatus, errorThrown) {
+                    $('#admin-panel-no-user').show();
+                }
+            })
+        })
+    })
+</script>

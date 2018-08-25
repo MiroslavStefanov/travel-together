@@ -24,9 +24,6 @@
                 </th:block>
             </fieldset>
 
-            <input type="hidden" th:name="${_csrf.parameterName}"
-                   th:value="${_csrf.token}" />
-
             <div hidden th:object="${model}">
                 <input type="hidden" th:field="*{targetUrl}" th:value="*{targetUrl}">
             </div>

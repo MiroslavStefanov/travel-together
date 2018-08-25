@@ -103,6 +103,10 @@ span.text-blue1{
     font-weight: lighter;
 }
 
+.text-weight-light{
+    font-weight: lighter;
+}
+
 #map {
     height: 100%;
 }
@@ -121,6 +125,10 @@ img.travel-recent-picture{
     max-height: 225px;
 }
 
+img.h-300px{
+    height: 300px;
+}
+
 img.profile-picture{
     max-width: 400px;
     max-height: 400px;
@@ -137,6 +145,69 @@ img{
 
 .scrollable-vertical{
     overflow-y: auto;
+    white-space: normal;
+}
+
+.block-with-text {
+    /* hide text if it more than N lines  */
+    overflow: hidden;
+    /* for set '...' in absolute position */
+    position: relative;
+    /* use this value to count block height */
+    line-height: 1.2em;
+    /* max-height = line-height (1.2) * lines max number (3) */
+    max-height: 6em;
+    /* fix problem when last visible word doesn't adjoin right side  */
+    text-align: left;
+    /* place for '...' */
+    margin-right: -1em;
+    padding-right: 1em;
+}
+
+@media (min-width: 768px) {
+    .block-with-text{
+        font-size: 1.5em;
+    }
+}
+
+.switchable {
+    -webkit-transition: opacity .5s ease-in-out;
+    -moz-transition: opacity .5s ease-in-out;
+    -ms-transition: opacity .5s ease-in-out;
+    -o-transition: opacity .5s ease-in-out;
+    transition: opacity .5s ease-in-out;
+}
+
+.fade { opacity: 0; }
+.reveal { opacity: 1; }
+
+/* create the ... */
+.block-with-text:before {
+    /* points in the end */
+    content: '...';
+    background: white;
+    /* absolute position */
+    position: absolute;
+    /* set position to right bottom corner of block */
+    right: 0;
+    padding-right: 5px;
+    bottom: 0;
+}
+/* hide ... if we have text, which is less than or equal to max lines */
+.block-with-text:after {
+    /* points in the end */
+    content: '';
+    /* absolute position */
+    position: absolute;
+    /* set position to right bottom corner of text */
+    right: 0;
+    margin-right: 5px;
+    /* set width and height */
+    width: 1em;
+    height: 1em;
+    margin-top: 0.2em;
+    /* bg color = bg color under block */
+    background: white;
 }
 
 .h-450px{
