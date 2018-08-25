@@ -1,5 +1,6 @@
 package org.softuni.traveltogether.services;
 
+import org.hibernate.annotations.Cache;
 import org.modelmapper.ModelMapper;
 import org.softuni.traveltogether.domain.entities.Destination;
 import org.softuni.traveltogether.domain.models.service.DestinationServiceModel;
@@ -8,6 +9,7 @@ import org.softuni.traveltogether.errorHandling.exceptions.EntityNotFoundExcepti
 import org.softuni.traveltogether.repositories.DestinationRepository;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -22,6 +24,8 @@ import java.util.stream.Collectors;
 @Transactional
 public class DestinationServiceImpl implements DestinationService {
     private static final String DESTINATION_NAMES_CACHE = "destinationNames";
+    private static final String DESTINATION_POPULAR_CACHE = "destinationPopular";
+    private static final String DESTINATION_BY_ID_CACHE = "destinationById";
 
     private final DestinationRepository destinationRepository;
     private final ModelMapper modelMapper;
@@ -77,6 +81,7 @@ public class DestinationServiceImpl implements DestinationService {
     }
 
     @Override
+    @Cacheable(DESTINATION_BY_ID_CACHE)
     public DestinationServiceModel getDestination(String id) {
         return this.destinationRepository
                 .findById(id)
@@ -100,6 +105,7 @@ public class DestinationServiceImpl implements DestinationService {
     }
 
     @Override
+    @Cacheable(DESTINATION_POPULAR_CACHE)
     public List<DestinationServiceModel> getAllWithMinTravels(long minTravels) {
         return this.destinationRepository.findAll()
                 .stream()
@@ -107,4 +113,9 @@ public class DestinationServiceImpl implements DestinationService {
                 .map(d -> this.modelMapper.map(d, DestinationServiceModel.class))
                 .collect(Collectors.toList());
     }
+
+    @Scheduled(cron="0 0 3 * * *")
+    @CacheEvict(cacheNames = {DESTINATION_POPULAR_CACHE, DESTINATION_BY_ID_CACHE}, allEntries = true)
+    public void clearPopularCache() {}
+
 }

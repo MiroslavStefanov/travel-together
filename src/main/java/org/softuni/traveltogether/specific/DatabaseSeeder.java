@@ -26,6 +26,9 @@ public class DatabaseSeeder {
     private static final String ROOT_USER_USERNAME = "root";
     private static final String ROOT_USER_PASSWORD = "rootPsw1234";
 
+    private static final String DUMMY_DESCRIPTION =
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur convallis gravida dui, at tempor libero ultrices eu. Fusce lobortis odio nulla, volutpat auctor urna accumsan et. Suspendisse ullamcorper nunc non magna ultrices, ac maximus nibh facilisis. Mauris ut nisi nec sem mattis tempor. In eget diam tortor. Cras sodales tempus ex elementum ullamcorper. Nam blandit diam neque, id consequat nisi egestas sit amet. Vivamus tincidunt vestibulum lorem, ut semper eros. Praesent sed fringilla nisi, a efficitur lectus. Nulla scelerisque massa risus, vitae commodo sapien rutrum tincidunt. Integer sit amet mauris velit. Praesent scelerisque magna vel laoreet pulvinar. Phasellus suscipit venenatis diam nec condimentum. In eget dolor ac justo lobortis dignissim. Nulla dignissim efficitur neque ac convallis.";
+
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final DestinationRepository destinationRepository;
@@ -48,7 +51,7 @@ public class DatabaseSeeder {
         this.seedRoles();
         this.seedRootUser();
         this.seedDestinations();
-        //this.seedTravels();
+        this.seedTravels();
     }
 
     private void seedRoles() {
@@ -81,11 +84,28 @@ public class DatabaseSeeder {
     private void seedDestinations() throws IOException {
         if(this.destinationRepository.count() == 0) {
             String destContent = this.fileService.read("/db/cities");
+            String bulgarianDestContent = this.fileService.read("/db/cities-bg");
             this.destinationRepository.saveAll(
                     Arrays.stream(destContent.split("\\r\\n"))
                             .map(line -> line.split(","))
-                            .map(data -> new Destination(data[1]+", "+data[5], Double.parseDouble(data[2]), Double.parseDouble(data[3])))
+                            .map(data -> new Destination(
+                                    data[1]+", "+data[5],
+                                    Double.parseDouble(data[2]),
+                                    Double.parseDouble(data[3]),
+                                    DUMMY_DESCRIPTION
+                            ))
                             .collect(Collectors.toSet()));
+            this.destinationRepository.saveAll(
+                    Arrays.stream(bulgarianDestContent.split("\\r\\n"))
+                            .map(line -> line.split(","))
+                            .map(data -> new Destination(
+                                    data[0]+", "+data[3],
+                                    Double.parseDouble(data[1]),
+                                    Double.parseDouble(data[2]),
+                                    DUMMY_DESCRIPTION
+                            ))
+                            .collect(Collectors.toSet())
+            );
         }
     }
 
@@ -96,14 +116,14 @@ public class DatabaseSeeder {
             Random random = new Random();
             allUsers.forEach(u -> {
                 Set<Travel> travels = new HashSet<>();
-                for (int i = 0; i < 300; i++) {
+                for (int i = 0; i < 200; i++) {
                     Travel travel = new Travel();
                     travel.setPublisher(u);
                     travel.setPublishedAt(LocalDateTime.now().minusDays(i));
                     travel.setDepartureTime(LocalDateTime.now().plusDays(i));
                     travel.setFromDestination(allDestinations.get(random.nextInt(allDestinations.size() - 1)));
                     travel.setToDestination(allDestinations.get(random.nextInt(allDestinations.size() - 1)));
-                    travel.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur convallis gravida dui, at tempor libero ultrices eu. Fusce lobortis odio nulla, volutpat auctor urna accumsan et. Suspendisse ullamcorper nunc non magna ultrices, ac maximus nibh facilisis. Mauris ut nisi nec sem mattis tempor. In eget diam tortor. Cras sodales tempus ex elementum ullamcorper. Nam blandit diam neque, id consequat nisi egestas sit amet. Vivamus tincidunt vestibulum lorem, ut semper eros. Praesent sed fringilla nisi, a efficitur lectus. Nulla scelerisque massa risus, vitae commodo sapien rutrum tincidunt. Integer sit amet mauris velit. Praesent scelerisque magna vel laoreet pulvinar. Phasellus suscipit venenatis diam nec condimentum. In eget dolor ac justo lobortis dignissim. Nulla dignissim efficitur neque ac convallis.");
+                    travel.setDescription(DUMMY_DESCRIPTION);
                     travels.add(travel);
                 }
                 this.travelRepository.saveAll(travels);

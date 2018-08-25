@@ -30,6 +30,15 @@ public class Destination {
         this.longitude = longitude;
     }
 
+    public Destination(String name, Double latitude, Double longitude, String description) {
+        this.travels = new HashSet<>();
+        this.name = name;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.description = description;
+    }
+
+
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(

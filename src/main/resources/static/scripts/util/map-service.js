@@ -1,3 +1,7 @@
+function sleep (time) {
+    return new Promise((resolve) => setTimeout(resolve, time));
+}
+
 const mapService = {
     map: null,
     markers: [],
@@ -51,7 +55,7 @@ const mapService = {
             fields: ['photos']
         };
 
-        if(this.placesService === null)
+        if(this.placesService === null || this.placesService === undefined)
             this.placesService = new google.maps.places.PlacesService(map);
 
         this.placesService.getDetails(request, (res, status) => {
@@ -68,8 +72,11 @@ const mapService = {
         let maxLoadSeconds = 20;
         let id;
         let found = false;
-        if(this.geocoder === null)
+        if(this.geocoder === null || this.geocoder === undefined)
             this.geocoder = new google.maps.Geocoder;
+
+        let func = this.getPhotosByPlaceId;
+        let self = this.getPhotosByGeocode;
 
         this.geocoder.geocode({'location': {lat: lat, lng: lng}}, function(results, status) {
             if (status === 'OK') {
@@ -78,7 +85,7 @@ const mapService = {
                     for(t in res['types']){
                         let type = res['types'][t];
                         if(type === 'locality' || type.includes('administrative_area')) {
-                            this.getPhotosByPlaceId(res['place_id'], callback);
+                            func(res['place_id'], callback);
                             found = true;
                             return;
                         }
@@ -89,20 +96,20 @@ const mapService = {
                     attempts = 0;
                 if((attempts*2) >= maxLoadSeconds) {
                     console.log('Geocoder failed! Status: ' + status);
-                    this.getPhotosByPlaceId(null, callback);
+                    func(null, callback);
                     return;
                 }
                 sleep(2000).then(() => {
-                    this.getPhotosByGeocode(lat, lng, callback, attempts+1);
+                    self(lat, lng, callback, attempts+1);
                 });
                 return;
             } else {
                 console.log('Geocoder failed! Status: ' + status);
-                this.getPhotosByPlaceId(null, callback);
+                func(null, callback);
                 return;
             }
             if(found === false) {
-                this.getPhotosByPlaceId(null, callback);
+                func(null, callback);
             }
         });
     }
