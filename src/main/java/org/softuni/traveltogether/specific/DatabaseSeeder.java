@@ -83,29 +83,30 @@ public class DatabaseSeeder {
 
     private void seedDestinations() throws IOException {
         if(this.destinationRepository.count() == 0) {
-            String destContent = this.fileService.read("/db/cities");
+//            String destContent = this.fileService.read("/db/cities");
             String bulgarianDestContent = this.fileService.read("/db/cities-bg");
-            this.destinationRepository.saveAll(
-                    Arrays.stream(destContent.split("\\r\\n"))
-                            .map(line -> line.split(","))
-                            .map(data -> new Destination(
-                                    data[1]+", "+data[5],
-                                    Double.parseDouble(data[2]),
-                                    Double.parseDouble(data[3]),
-                                    DUMMY_DESCRIPTION
-                            ))
-                            .collect(Collectors.toSet()));
-            this.destinationRepository.saveAll(
-                    Arrays.stream(bulgarianDestContent.split("\\r\\n"))
-                            .map(line -> line.split(","))
-                            .map(data -> new Destination(
-                                    data[0]+", "+data[3],
-                                    Double.parseDouble(data[1]),
-                                    Double.parseDouble(data[2]),
-                                    DUMMY_DESCRIPTION
-                            ))
-                            .collect(Collectors.toSet())
-            );
+//            this.destinationRepository.saveAll(
+//                    Arrays.stream(destContent.split("\\r\\n"))
+//                            .map(line -> line.split(","))
+//                            .map(data -> new Destination(
+//                                    data[1]+", "+data[5],
+//                                    Double.parseDouble(data[2]),
+//                                    Double.parseDouble(data[3]),
+//                                    DUMMY_DESCRIPTION
+//                            ))
+//                            .collect(Collectors.toSet()));
+
+            var bgDestinations = Arrays.stream(bulgarianDestContent.split("\\n"))
+                    .map(line -> line.split(","))
+                    .map(data -> new Destination(
+                            data[0]+", "+data[3],
+                            Double.parseDouble(data[1]),
+                            Double.parseDouble(data[2]),
+                            DUMMY_DESCRIPTION
+                    ))
+                    .collect(Collectors.toSet());
+
+            this.destinationRepository.saveAll(bgDestinations);
         }
     }
 
@@ -121,8 +122,14 @@ public class DatabaseSeeder {
                     travel.setPublisher(u);
                     travel.setPublishedAt(LocalDateTime.now().minusDays(i));
                     travel.setDepartureTime(LocalDateTime.now().plusDays(i));
-                    travel.setFromDestination(allDestinations.get(random.nextInt(allDestinations.size() - 1)));
-                    travel.setToDestination(allDestinations.get(random.nextInt(allDestinations.size() - 1)));
+
+                    var fromIndex = random.nextInt(allDestinations.size() - 1);
+                    var from = allDestinations.get(fromIndex);
+                    travel.setFromDestination(from);
+
+                    var toIndex = random.nextInt(allDestinations.size() - 1);
+                    var to = allDestinations.get(fromIndex);
+                    travel.setToDestination(to);
                     travel.setDescription(DUMMY_DESCRIPTION);
                     travels.add(travel);
                 }

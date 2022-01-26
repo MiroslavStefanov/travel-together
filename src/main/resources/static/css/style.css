@@ -296,3 +296,12 @@ input.no-border, input.no-border:hover, input.no-border:focus, input.no-border:a
 .clickable{
     cursor: pointer;
 }
+
+.marker {
+    background-image: url('../assets/map-marker.png');
+    background-size: cover;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+}
