@@ -75,7 +75,6 @@ public class DatabaseSeeder {
         this.seedRoles();
         this.seedRootUser();
         this.seedDestinations();
-        this.seedTravels();
     }
 
     private void seedRoles() {
