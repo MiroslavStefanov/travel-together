@@ -85,7 +85,6 @@ public class Destination {
         this.longitude = longitude;
     }
 
-    @Lob
     public String getDescription() {
         return description;
     }
@@ -103,7 +102,6 @@ public class Destination {
         this.travels = travels;
     }
 
-    @Lob
     @ElementCollection
     public Set<String> getImageUrls() {
         return imageUrls;

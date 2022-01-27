@@ -3,12 +3,11 @@ package org.softuni.traveltogether.web.controllers;
 import org.modelmapper.ModelMapper;
 import org.softuni.traveltogether.domain.models.binding.TravelCreateBindingModel;
 import org.softuni.traveltogether.domain.models.service.TravelServiceModel;
-import org.softuni.traveltogether.domain.models.service.UserServiceModel;
 import org.softuni.traveltogether.domain.models.view.TravelCreateViewModel;
 import org.softuni.traveltogether.domain.models.view.TravelDetailsViewModel;
 import org.softuni.traveltogether.services.DestinationService;
 import org.softuni.traveltogether.services.TravelService;
-import org.springframework.http.HttpStatus;
+import org.softuni.traveltogether.specific.DatabaseSeeder;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -18,7 +17,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
 import java.security.Principal;
-import java.time.LocalDateTime;
 import java.util.Map;
 
 @Controller
@@ -28,14 +26,19 @@ public class TravelController extends BaseController {
             "hasRole(T(org.softuni.traveltogether.specific.UserRole).ROLE_ADMIN.name()) " +
                     "|| principal.username.equals(@travelServiceImpl.getTravel(#id).publisher.username)";
 
+    private static final String TRAVEL_SEED_AUTHORIZATION_EXPRESSION_STRING =
+            "hasRole(T(org.softuni.traveltogether.specific.UserRole).ROLE_ROOT.name()) ";
+
     private final TravelService travelService;
     private final DestinationService destinationService;
     private final ModelMapper modelMapper;
+    private final DatabaseSeeder seeder;
 
-    public TravelController(TravelService travelService, DestinationService destinationService, ModelMapper modelMapper) {
+    public TravelController(TravelService travelService, DestinationService destinationService, ModelMapper modelMapper, DatabaseSeeder seeder) {
         this.travelService = travelService;
         this.destinationService = destinationService;
         this.modelMapper = modelMapper;
+        this.seeder = seeder;
     }
 
     @GetMapping("/create")
@@ -114,5 +117,11 @@ public class TravelController extends BaseController {
     public @ResponseBody boolean manageAttendant(@RequestBody Map<String, Object> updates, @PathVariable("id") String id, @PathVariable("action") String action) {
         this.travelService.manageAttendant(id, updates.get("attendantId").toString(), action);
         return true;
+    }
+
+    @RequestMapping(path = "/seed", method = RequestMethod.POST)
+    @PreAuthorize(TRAVEL_SEED_AUTHORIZATION_EXPRESSION_STRING)
+    public @ResponseBody Boolean seedTravels(@RequestBody Integer count) {
+        return seeder.seedTravels(count);
     }
 }

@@ -46,12 +46,35 @@ public class DatabaseSeeder {
         this.fileService = fileService;
     }
 
+    public boolean seedTravels(Integer travelCount) {
+        if(travelRepository.count() == 0) {
+            List<User> allUsers = this.userRepository.findAll();
+            List<Destination> allDestinations = this.destinationRepository.findAll();
+            Random random = new Random();
+            allUsers.forEach(u -> {
+                Set<Travel> travels = new HashSet<>();
+                for (int i = 0; i < travelCount; i++) {
+                    Travel travel = new Travel();
+                    travel.setPublisher(u);
+                    travel.setPublishedAt(LocalDateTime.now().minusDays(i));
+                    travel.setDepartureTime(LocalDateTime.now().plusDays(i));
+                    travel.setFromDestination(allDestinations.get(random.nextInt(allDestinations.size() - 1)));
+                    travel.setToDestination(allDestinations.get(random.nextInt(allDestinations.size() - 1)));
+                    travel.setDescription(DUMMY_DESCRIPTION);
+                    travels.add(travel);
+                }
+                this.travelRepository.saveAll(travels);
+            });
+            return true;
+        }
+        return false;
+    }
+
     @EventListener
     public void handleContextRefreshListener(ContextRefreshedEvent event) throws IOException {
         this.seedRoles();
         this.seedRootUser();
         this.seedDestinations();
-        this.seedTravels();
     }
 
     private void seedRoles() {
@@ -83,18 +106,7 @@ public class DatabaseSeeder {
 
     private void seedDestinations() throws IOException {
         if(this.destinationRepository.count() == 0) {
-            String destContent = this.fileService.read("/db/cities");
             String bulgarianDestContent = this.fileService.read("/db/cities-bg");
-            this.destinationRepository.saveAll(
-                    Arrays.stream(destContent.split("\\r\\n"))
-                            .map(line -> line.split(","))
-                            .map(data -> new Destination(
-                                    data[1]+", "+data[5],
-                                    Double.parseDouble(data[2]),
-                                    Double.parseDouble(data[3]),
-                                    DUMMY_DESCRIPTION
-                            ))
-                            .collect(Collectors.toSet()));
             this.destinationRepository.saveAll(
                     Arrays.stream(bulgarianDestContent.split("\\r\\n"))
                             .map(line -> line.split(","))
@@ -102,32 +114,10 @@ public class DatabaseSeeder {
                                     data[0]+", "+data[3],
                                     Double.parseDouble(data[1]),
                                     Double.parseDouble(data[2]),
-                                    DUMMY_DESCRIPTION
+                                    null
                             ))
                             .collect(Collectors.toSet())
             );
-        }
-    }
-
-    private void seedTravels() {
-        if(travelRepository.count() == 0) {
-            List<User> allUsers = this.userRepository.findAll();
-            List<Destination> allDestinations = this.destinationRepository.findAll();
-            Random random = new Random();
-            allUsers.forEach(u -> {
-                Set<Travel> travels = new HashSet<>();
-                for (int i = 0; i < 200; i++) {
-                    Travel travel = new Travel();
-                    travel.setPublisher(u);
-                    travel.setPublishedAt(LocalDateTime.now().minusDays(i));
-                    travel.setDepartureTime(LocalDateTime.now().plusDays(i));
-                    travel.setFromDestination(allDestinations.get(random.nextInt(allDestinations.size() - 1)));
-                    travel.setToDestination(allDestinations.get(random.nextInt(allDestinations.size() - 1)));
-                    travel.setDescription(DUMMY_DESCRIPTION);
-                    travels.add(travel);
-                }
-                this.travelRepository.saveAll(travels);
-            });
         }
     }
 }

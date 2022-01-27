@@ -41,7 +41,6 @@ public class Travel {
         this.id = id;
     }
 
-    @Lob
     public String getDescription() {
         return description;
     }
