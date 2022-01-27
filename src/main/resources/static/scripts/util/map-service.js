@@ -3,35 +3,34 @@ function sleep (time) {
 }
 
 const mapService = {
+    accessToken: 'pk.eyJ1IjoicGFuZGljYW8iLCJhIjoiY2t5cTFiNDllMGZydTJxcHRpdmZnNGUxZSJ9.LbqfQLYr_WXAk6FRwCbH0A',
     map: null,
     markers: [],
     placesService: null,
     geocoder: null,
 
     initMap: function(mapElementId, center, zoom) {
-        this.map = new google.maps.Map(document.getElementById(mapElementId), {
+        mapboxgl.accessToken = this.accessToken
+        this.map = new mapboxgl.Map({
+            container: mapElementId,
+            style: 'mapbox://styles/mapbox/streets-v11', // style URL
             center: center,
             zoom: zoom
         });
     },
 
     placeMarker: function(position) {
-        let icon = {
-            url: '/assets/map-marker.png',
-            scaledSize: new google.maps.Size(50, 50)
-        };
+        const el = document.createElement('div');
+        el.className = 'marker';
 
-        this.markers.push(new google.maps.Marker({
-            position: position,
-            map: this.map,
-            animation: google.maps.Animation.BOUNCE,
-            icon: icon
-        }));
+        let marker = new mapboxgl.Marker(el);
+        marker.setLngLat(position).addTo(this.map);
+        this.markers.push(marker);
     },
 
     removeMarker: function() {
         if(this.markers.length > 0) {
-            this.markers[this.markers.length - 1].setMap(null);
+            this.markers[this.markers.length - 1].remove();
             this.markers.pop();
         }
     },
