@@ -30,16 +30,31 @@
         </div>
     </form>
 </div>
-<script xmlns:th="http://www.thymeleaf.org" th:src="@{/scripts/util/autocomplete.js}"></script>
 <script xmlns:th="http://www.thymeleaf.org" th:inline="javascript">
     autocomplete(document.getElementById("from"), [[${allDestinations}]]);
     autocomplete(document.getElementById("to"), [[${allDestinations}]]);
     $('#travel-search-from').submit((event) => {
         event.preventDefault();
+        let travelPageHandler = new TravelPageHandler();
         travelPageHandler.arguments.sDest = $('#from').val();
         travelPageHandler.arguments.eDest = $('#to').val();
         travelPageHandler.arguments.fDate = $('#when-from').val();
         travelPageHandler.arguments.tDate = $('#when-to').val();
+
+        let pageService = new PageService(travelPageHandler);
         pageService.handlePage();
+
+        $("#prev").click(pageService.prev);
+
+        let leftEllipsis = $("#left-ellipsis");
+        leftEllipsis.click(() => pageService.selectPage(leftEllipsis));
+
+        let current = $("#current");
+        current.click(() => pageService.selectPage(current));
+
+        let rightEllipsis = $("#right-ellipsis");
+        rightEllipsis.click(() => pageService.selectPage(rightEllipsis));
+
+        $("#next").click(pageService.next);
     });
 </script>

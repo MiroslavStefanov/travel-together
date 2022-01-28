@@ -20,7 +20,7 @@ function showPreview(destinations, indx, elems, delay){
         };
 
         if (current.imageUrls === undefined || current.imageUrls === null || current.imageUrls.length === 0) {
-            mapService.getPhotosByGeocode(current.latitude, current.longitude, callback);
+            // mapService.getPhotosByGeocode(current.latitude, current.longitude, callback);
         } else {
             addCarousel(elems.carousel, current.imageUrls, 'carousel-' + indx);
         }

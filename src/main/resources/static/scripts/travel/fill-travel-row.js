@@ -22,7 +22,7 @@ function fillRow(data) {
         };
 
         if (to.imageUrls === undefined || to.imageUrls === null || to.imageUrls.length === 0) {
-            mapService.getPhotosByGeocode(to.latitude, to.longitude, callback);
+            // mapService.getPhotosByGeocode(to.latitude, to.longitude, callback);
         } else {
             addCarousel(current.find('.carousel-container'), to.imageUrls, currentCarouselId);
         }

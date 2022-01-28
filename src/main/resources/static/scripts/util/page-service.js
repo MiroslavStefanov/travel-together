@@ -1,22 +1,20 @@
-const pageService = {
-    pageButtonCount: 8,
-    page: 0,
-    size: 0,
-    currentButtonClass: 'btn-blue',
-    pageHandler: {},
+class PageService {
+    constructor(pageHandler) {
+            this.pageButtonCount = 8;
+            this.page = 0;
+            this.size = 0;
+            this.currentButtonClass = 'btn-blue';
+            this.pageHandler = pageHandler;
+    }
 
     setSize(size) {
         this.size = size;
         this.processButtons();
-    },
+    }
 
     setCurrentButtonClass(className) {
         this.currentButtonClass = className;
-    },
-
-    setPageHandler(pageHandler) {
-        this.pageHandler = pageHandler;
-    },
+    }
 
     initButtons(button) {
         button.text('1');
@@ -28,7 +26,7 @@ const pageService = {
             lastButton.after(newButton);
             lastButton = newButton;
         }
-    },
+    }
 
     updateButtons(buttons){
         let button;
@@ -59,7 +57,7 @@ const pageService = {
             $(this).text(num.toString());
             $(this).attr('hidden', num > size);
         });
-    },
+    }
 
     processButtons() {
         let bar = $('#pagination-bar');
@@ -83,21 +81,21 @@ const pageService = {
         button = buttons.last();
         elem = bar.find('#right-ellipsis');
         elem.attr('hidden', parseInt(button.text()) >= this.size);
-    },
+    }
 
     handlePage() {
-        this.pageHandler.handlePage(this.page);
-    },
+        this.pageHandler.handlePage(this, this.page);
+    }
 
     prev() {
         this.page--;
         this.handlePage();
-    },
+    }
 
     next() {
         this.page++;
         this.handlePage();
-    },
+    }
 
     handleEllipsis(id) {
         let bar = $('#pagination-bar');
@@ -105,7 +103,7 @@ const pageService = {
             this.page = parseInt(bar.find('.btn-page').first().text())-2;
         else if(id === 'right-ellipsis')
             this.page = parseInt(bar.find('.btn-page').last().text());
-    },
+    }
 
     selectPage(elem) {
         if(elem.innerHTML === '...'){
@@ -115,4 +113,4 @@ const pageService = {
         }
         this.handlePage();
     }
-};
+}
