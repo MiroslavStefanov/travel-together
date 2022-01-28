@@ -108,7 +108,7 @@ public class DatabaseSeeder {
         if(this.destinationRepository.count() == 0) {
             String bulgarianDestContent = this.fileService.read("/db/cities-bg");
             this.destinationRepository.saveAll(
-                    Arrays.stream(bulgarianDestContent.split("\\r\\n"))
+                    Arrays.stream(bulgarianDestContent.split("\\n"))
                             .map(line -> line.split(","))
                             .map(data -> new Destination(
                                     data[0]+", "+data[3],

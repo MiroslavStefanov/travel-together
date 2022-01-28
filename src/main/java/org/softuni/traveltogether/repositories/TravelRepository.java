@@ -26,8 +26,8 @@ public interface TravelRepository extends JpaRepository<Travel, String> {
             "where t.departureTime >= current_date and " +
             "(:sDest is null or t.fromDestination.name = :sDest) and " +
             "(:eDest is null or t.toDestination.name = :eDest) and " +
-            "(:fDate is null or t.departureTime >= :fDate) and " +
-            "(:tDate is null or t.departureTime <= :tDate)")
+            "(cast(:fDate as timestamp) is null or t.departureTime >= :fDate) and " +
+            "(cast(:tDate as timestamp) is null or t.departureTime <= :tDate)")
     Page<Travel> findAllActiveBySearchParameters(
             @Param("sDest") String from,
             @Param("eDest") String to,
